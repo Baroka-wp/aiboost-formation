@@ -1,0 +1,177 @@
+/* MarkdownStyles.css */
+.markdown-body {
+  box-sizing: border-box;
+  min-width: 200px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+  color: #333; /* Couleur de texte principale */
+  background-color: #fff; /* Fond blanc pour le contenu */
+}
+
+@media (max-width: 767px) {
+  .markdown-body {
+    padding: 15px;
+  }
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #e86600; /* Couleur orange pour les titres */
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #ffd7b5; /* Bordure légère orange */
+}
+
+.markdown-body h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #ffd7b5; /* Bordure légère orange */
+}
+
+.markdown-body a {
+  color: #e86600; /* Liens en orange */
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.markdown-body code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: #fff5eb; /* Fond légèrement orangé pour le code inline */
+  border-radius: 3px;
+  color: #e86600; /* Texte du code en orange */
+}
+
+.markdown-body pre {
+  word-wrap: normal;
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #fff5eb; /* Fond légèrement orangé pour les blocs de code */
+  border-radius: 3px;
+  border: 1px solid #ffd7b5; /* Bordure légère orange */
+}
+
+.markdown-body pre code {
+  display: inline;
+  max-width: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
+  color: #333; /* Couleur de texte normale pour le code dans les blocs */
+}
+
+.markdown-body blockquote {
+  padding: 0 1em;
+  color: #666;
+  border-left: 0.25em solid #e86600; /* Barre latérale orange pour les citations */
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 2em;
+}
+
+.markdown-body li + li {
+  margin-top: 0.25em;
+}
+
+.markdown-body table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid #ffd7b5; /* Bordures de tableau légèrement orangées */
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: #fff5eb; /* Fond légèrement orangé pour les lignes paires */
+}
+
+/* Ajustement pour la coloration syntaxique */
+.hljs {
+  background: #fff5eb !important; /* Fond légèrement orangé pour la coloration syntaxique */
+  color: #333 !important; /* Couleur de base pour le code */
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #e86600 !important; /* Mots-clés en orange */
+}
+
+.hljs-string,
+.hljs-doctag {
+  color: #009688 !important; /* Chaînes en vert-bleu */
+}
+
+.hljs-number,
+.hljs-literal {
+  color: #ff5722 !important; /* Nombres en orange vif */
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #999 !important; /* Commentaires en gris */
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 2em;
+  margin-bottom: 16px;
+}
+
+.markdown-body ul {
+  list-style-type: disc;
+}
+
+.markdown-body ol {
+  list-style-type: decimal;
+}
+
+.markdown-body li {
+  margin-bottom: 0.25em;
+}
+
+.markdown-body li > ul,
+.markdown-body li > ol {
+  margin-top: 0.25em;
+  margin-bottom: 0;
+}
+
+.table-of-contents {
+  position: fixed;
+  top: 70px; /* Ajuster si nécessaire en fonction de la hauteur de la barre de navigation */
+  left: 0;
+  width: 200px; /* Ajuster la largeur si nécessaire */
+  max-height: calc(100vh - 70px); /* Ajuster en fonction de la hauteur de la barre de navigation */
+  overflow-y: auto;
+  background-color: #f8f8f8; /* Couleur de fond de la table des matières */
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}

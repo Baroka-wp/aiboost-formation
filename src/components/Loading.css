@@ -1,0 +1,52 @@
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8); /* Couleur de fond semi-transparente */
+  z-index: 9999;
+}
+
+.rocket {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  animation: rocket-move 2s linear infinite;
+}
+
+.rocket-body {
+  width: 100%;
+  height: 100%;
+  background-color: #FFCC00; /* Couleur jaune pour le corps */
+  position: absolute;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.rocket-fins {
+  width: 100%;
+  height: 100%;
+  background-color: #FF5733; /* Couleur rouge pour les ailes */
+  position: absolute;
+  clip-path: polygon(50% 100%, 100% 50%, 50% 50%, 0% 50%);
+}
+
+@keyframes rocket-move {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.loading-container p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-top: 1rem;
+}
