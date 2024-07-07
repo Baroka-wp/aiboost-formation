@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCourseById, getUserProgress, validateChapter } from '../services/api';
-import { Menu, X, ChevronLeft, CheckCircle } from 'lucide-react';
+import { getCourseById, getUserProgress, validateChapter, submitLink, getSubmissionStatus } from '../services/api';
+import { Menu, X, ChevronLeft, CheckCircle, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeSlug from 'rehype-slug';
 import YouTube from 'react-youtube';
 import ReactPlayer from 'react-player';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -17,6 +13,8 @@ import '../MarkdownStyles.css';
 import QCM from './QCM';
 import TableOfContents from './TableOfContents';
 import Loading from './Loading';
+import LinkSubmission from './LinkSubmission';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 const ChapterContent = () => {
   const { courseId, chapterId } = useParams();
@@ -28,17 +26,24 @@ const ChapterContent = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [isLoading, setIsLoading] = useState(true);
+  const [submissionStatus, setSubmissionStatus] = useState('not_submitted');
+  const [hasSubmission, setHasSubmission] = useState(false);
+  const [hasQcm, sethasQcm] = useState(false);
+
+  const { user } = useAuth();
 
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const [courseResponse, progressResponse] = await Promise.all([
+      const [courseResponse, progressResponse, statusData] = await Promise.all([
         getCourseById(courseId),
-        getUserProgress(courseId)
+        getUserProgress(courseId),
+        getSubmissionStatus(courseId, chapterId, user?.id)
       ]);
 
       setCourse(courseResponse.data);
       setUserProgress(progressResponse.data);
+      setSubmissionStatus(statusData.data?.status)
 
       const currentChapter = courseResponse.data.chapters.find(ch => ch.id === parseInt(chapterId));
 
@@ -76,6 +81,12 @@ const ChapterContent = () => {
   }, [fetchData])
 
   useEffect(() => {
+    if(submissionStatus !== 'not_submitted') {
+      setHasSubmission(true)
+    } 
+  }, [submissionStatus])
+
+  useEffect(() => {
     const handleResize = () => {
       const newIsMobile = window.innerWidth < 768;
       setIsMobile(newIsMobile);
@@ -86,7 +97,11 @@ const ChapterContent = () => {
   }, []);
 
   const handleChapterComplete = useCallback(async (score) => {
-    if (score >= 80) {
+    sethasQcm(true);
+    const isScoreValid =  hasQcm && score >= 80;
+    const canValidateChapter = !hasSubmission || (hasSubmission && submissionStatus === 'approved');
+
+    const validateChapterAndUpdateProgress = async () => {
       try {
         const response = await validateChapter(courseId, parseInt(chapterId), score);
         setUserProgress(response.data);
@@ -94,10 +109,33 @@ const ChapterContent = () => {
       } catch (error) {
         console.error("Error validating chapter:", error);
       }
-    } else {
+    };
+
+    if (isScoreValid && canValidateChapter) {
+      await validateChapterAndUpdateProgress();
+    } else if (!isScoreValid) {
       console.log("Chapter not validated. Score below 80%");
+    } else {
+      console.log("Chapter not validated. Submission not approved yet.");
     }
-  }, [courseId, chapterId]);
+  }, [courseId, chapterId, hasSubmission, submissionStatus, validateChapter, setUserProgress]);
+
+
+  const handleLinkSubmit = useCallback(async (courseId, chapterId, link) => {
+    setHasSubmission(true)
+    try {
+      const userId = user?.id
+      await submitLink(courseId, chapterId, link, userId);
+      setSubmissionStatus('pending');
+    } catch (error) {
+      console.error("Error submitting link:", error);
+      throw error;
+    }
+  }, []);
+
+
+  console.log(hasQcm, hasSubmission)
+
 
   const renderers = {
     code: ({ node, inline, className, children, ...props }) => {
@@ -121,6 +159,15 @@ const ChapterContent = () => {
                 <ReactPlayer url={`/media/${videoPath}`} controls width="100%" />
               </div>
             );
+          case 'submission':
+            return (
+              <LinkSubmission
+                courseId={courseId}
+                chapterId={chapterId}
+                onSubmit={handleLinkSubmit}
+                initialStatus={submissionStatus}
+              />
+            );
           default:
             return (
               <SyntaxHighlighter
@@ -135,6 +182,32 @@ const ChapterContent = () => {
         }
       }
       return <code className={className} {...props}>{children}</code>;
+    },
+    img: ({ src, alt, title }) => {
+      // Vérifier si l'image est une URL complète ou un chemin relatif
+      const imageSrc = src.startsWith('http') ? src : `${src}`;
+      return (
+        <img
+          src={imageSrc}
+          alt={alt}
+          title={title}
+          className="max-w-full h-auto rounded-lg shadow-md my-4"
+        />
+      );
+    },
+    a: ({ href, children }) => {
+      const isExternal = href.startsWith('http');
+      return (
+        <a
+          href={href}
+          target={isExternal ? "_blank" : undefined}
+          rel={isExternal ? "noopener noreferrer" : undefined}
+          className="text-orange-600 hover:text-orange-800 underline"
+        >
+          {children}
+          {isExternal && <ExternalLink size={14} className="inline-block ml-1" />}
+        </a>
+      );
     },
   };
 
@@ -174,7 +247,7 @@ const ChapterContent = () => {
                   className={`flex items-center cursor-pointer p-2 rounded ${parseInt(chapterId) === chapter.id ? 'bg-orange-100' : 'hover:bg-orange-50'}`}
                   onClick={() => navigate(`/course/${courseId}/chapter/${chapter.id}`)}
                 >
-                  {userProgress?.completed_chapters.includes(chapter.id) && (
+                  { userProgress?.completed_chapters.includes(chapter.id) && (
                     <CheckCircle size={16} className="text-green-500 mr-2" />
                   )}
                   <span>{chapter.title}</span>
@@ -190,10 +263,7 @@ const ChapterContent = () => {
             <h1 className="text-3xl font-bold mb-6">{course.chapters.find(ch => ch.id === parseInt(chapterId))?.title}</h1>
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="markdown-body">
-                <ReactMarkdown
-                  rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight, rehypeSlug]}
-                  components={renderers}
-                >
+                <ReactMarkdown components={renderers}>
                   {chapterContent}
                 </ReactMarkdown>
               </div>

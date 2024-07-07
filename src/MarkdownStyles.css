@@ -190,3 +190,11 @@
 .markdown-body p {
   white-space: break-spaces !important;
 }
+
+.markdown-body p {
+  white-space: break-spaces !important;
+}
+
+.markdown-body button {
+  white-space: break-spaces !important;
+}

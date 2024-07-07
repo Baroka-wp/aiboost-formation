@@ -59,6 +59,18 @@ Avant d''utiliser les outils d''IA, rassemblez :
 
 **Exercice final** : Comparez votre CV original avec la version améliorée par l''IA. Réfléchissez aux améliorations et aux aspects que vous pourriez encore peaufiner.
 
+## 6. Exemple de cv à utiliser come modèle: 
+[Irotori Baroka CV](https://docs.google.com/document/d/1qZZhD-Zhp84OHM_XH-iJxqpTltHvuQY4HEq0zn4xGrE/edit#heading=h.df8ey3f12oj3)
+
+
+## Soumettez votre travail
+
+Veuillez soumettre le lien vers votre travail ci-dessous :
+
+```submission
+
+```
+
 ## Conclusion
 
 L''utilisation efficace de l''IA dans la rédaction de CV est un équilibre entre l''exploitation de la technologie et le maintien de votre authenticité. En suivant ces techniques, vous pouvez créer un CV qui est à la fois optimisé pour les systèmes automatisés et convaincant pour les lecteurs humains.
