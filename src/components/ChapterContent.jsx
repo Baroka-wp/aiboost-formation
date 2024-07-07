@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCourseById, getUserProgress, updateUserProgress, validateChapter } from '../services/api';
+import { getCourseById, getUserProgress, validateChapter } from '../services/api';
 import { Menu, X, ChevronLeft, CheckCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -28,7 +28,6 @@ const ChapterContent = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [isLoading, setIsLoading] = useState(true);
-
 
   const fetchData = useCallback(async () => {
     try {
@@ -63,13 +62,6 @@ const ChapterContent = () => {
           });
       } else {
         setChapterContent("Chapter not found.");
-      }
-
-      console.log(progressResponse.data)
-
-      // Mettre à jour la progression de l'utilisateur
-      if (!progressResponse.data?.completed_chapter.includes(parseInt(chapterId))) {
-        await updateUserProgress(courseId, parseInt(chapterId));
       }
     } catch (error) {
       console.error("Error fetching data:", error);
