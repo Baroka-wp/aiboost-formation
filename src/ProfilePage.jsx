@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, LogOut } from 'lucide-react';
 import { getEnrolledCourses, getUserProfile } from './services/api';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext';
+import { useAuth } from './contexts/AuthContext.jsx';
 import Loading from './components/Loading'; 
-
 
 const ProfilePage = () => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
@@ -43,28 +42,34 @@ const ProfilePage = () => {
     navigate('/login');
   };
 
-  if (loading) return <Loading />; ;
+  if (loading) return <Loading />;
   if (error) return <div className="text-center mt-8 text-red-600">{error}</div>;
 
   return (
     <div className="bg-orange-50 min-h-screen font-sans">
-      <header className="bg-white shadow-md p-4">
+      <header className="bg-white shadow-md p-4 sticky top-0 z-10">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold text-orange-600">AIBoost</h1>
-          <nav>
-            <ul className="flex space-x-6">
-              <li><button onClick={() => navigate('/')} className="hover:text-orange-600 transition-colors">Home</button></li>
-              <li><button onClick={() => handleLogout()} className="hover:text-orange-600 transition-colors">Logout</button></li>
-            </ul>
+          <nav className="flex items-center space-x-4">
+            <button onClick={() => navigate('/')} className="text-orange-600 hover:text-orange-700 transition-colors">
+              Accueil
+            </button>
+            <button 
+              onClick={handleLogout} 
+              className="bg-orange-600 text-white px-4 py-2 rounded-full hover:bg-orange-700 transition-colors flex items-center"
+            >
+              <LogOut size={18} className="mr-2" />
+              Déconnexion
+            </button>
           </nav>
         </div>
       </header>
 
-      <main className="container mx-auto p-8">
+      <main className="container mx-auto p-4 md:p-8">
         {userProfile && (
-          <div>
-            <h2 className="text-3xl font-bold mb-8">Hi, {userProfile.full_name}</h2>
-            <p>email : {userProfile.email}</p>
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Bienvenue, {userProfile.full_name}</h2>
+            <p className="text-gray-600">Email : {userProfile.email}</p>
           </div>
         )}
 
@@ -77,15 +82,17 @@ const ProfilePage = () => {
                 <p className="text-gray-600 mb-4">{course.description}</p>
                 <button
                   onClick={() => navigate(`/course/${course.id}`)}
-                  className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition-colors flex items-center"
+                  className="bg-orange-600 text-white px-4 py-2 rounded-full hover:bg-orange-700 transition-colors flex items-center justify-center w-full"
                 >
-                  Continue Course <ChevronRight size={20} className="ml-2" />
+                  Continuer le cours <ChevronRight size={20} className="ml-2" />
                 </button>
               </div>
             ))}
           </div>
         ) : (
-          <p>You are not enrolled in any courses yet.</p>
+          <p className="text-center text-gray-600 bg-white rounded-lg shadow-md p-6">
+            Vous n'êtes inscrit à aucun cours pour le moment.
+          </p>
         )}
       </main>
     </div>

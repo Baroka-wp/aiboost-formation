@@ -43,46 +43,43 @@ const QCM = ({ title, questions, onComplete }) => {
   };
 
   return (
-    <div className="bg-orange-50 border-2 border-orange-200 rounded-lg my-6 shadow-md">
+    <div className="bg-orange-50 border-2 border-orange-200 rounded-lg my-6 shadow-md overflow-hidden">
       <button
         onClick={toggleOpen}
         className="w-full p-4 flex justify-between items-center text-xl font-bold text-orange-800 hover:bg-orange-100 transition-colors"
       >
-        {title}
+        <span className="truncate">{title}</span>
         {isOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
       </button>
       {isOpen && (
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           {!isSubmitted ? (
             <>
-              <h3 className="text-lg font-semibold mb-4 text-gray-800">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800 break-words">
                 {questions[currentQuestion].question} (Points: {questions[currentQuestion].points})
               </h3>
               <div className="space-y-3">
                 {questions[currentQuestion].options.map((option, index) => (
-                  <label key={index} className="flex items-center space-x-3 p-2 rounded hover:bg-orange-100 transition-colors cursor-pointer">
-                    <div className="relative">
+                  <label key={index} className="flex items-start space-x-3 p-2 rounded hover:bg-orange-100 transition-colors cursor-pointer">
+                    <div className="flex-shrink-0 mt-1">
                       <input
                         type="radio"
                         name={`question-${currentQuestion}`}
                         value={option}
                         checked={answers[currentQuestion] === option}
                         onChange={() => handleAnswer(currentQuestion, option)}
-                        className="appearance-none w-5 h-5 border-2 border-orange-400 rounded-full checked:border-orange-600 checked:bg-orange-600 transition-all cursor-pointer"
+                        className="w-4 h-4 text-orange-600 border-orange-300 focus:ring-orange-500"
                       />
-                      <div className="absolute top-0 left-0 w-5 h-5 flex items-center justify-center pointer-events-none">
-                        <div className="w-2 h-2 bg-white rounded-full opacity-0 checked:opacity-100 transition-opacity"></div>
-                      </div>
                     </div>
-                    <span className="text-lg text-gray-700">{option}</span>
+                    <span className="text-base text-gray-700 break-words">{option}</span>
                   </label>
                 ))}
               </div>
-              <div className="mt-6 flex justify-between">
+              <div className="mt-6 flex flex-wrap justify-between gap-4">
                 <button
                   onClick={() => setCurrentQuestion(Math.max(0, currentQuestion - 1))}
                   disabled={currentQuestion === 0}
-                  className="bg-orange-600 text-white px-4 py-2 rounded-full hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  className="bg-orange-600 text-white px-4 py-2 rounded-full hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex-grow md:flex-grow-0"
                 >
                   Précédent
                 </button>
@@ -90,7 +87,7 @@ const QCM = ({ title, questions, onComplete }) => {
                   <button
                     onClick={() => setCurrentQuestion(currentQuestion + 1)}
                     disabled={!answers[currentQuestion]}
-                    className="bg-orange-600 text-white px-4 py-2 rounded-full hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    className="bg-orange-600 text-white px-4 py-2 rounded-full hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex-grow md:flex-grow-0"
                   >
                     Suivant
                   </button>
@@ -98,7 +95,7 @@ const QCM = ({ title, questions, onComplete }) => {
                   <button
                     onClick={handleSubmit}
                     disabled={!answers[currentQuestion]}
-                    className="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    className="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex-grow md:flex-grow-0"
                   >
                     Terminer
                   </button>
@@ -108,28 +105,17 @@ const QCM = ({ title, questions, onComplete }) => {
           ) : (
             <div className="mt-6 p-4 bg-white rounded-lg shadow">
               <h3 className="text-xl font-bold mb-4 text-orange-800">Résultats :</h3>
-              {/* {questions.map((q, index) => (
-                <div key={index} className="mb-4 p-3 bg-orange-50 rounded">
-                  <p className="font-semibold text-gray-800">{q.question}</p>
-                  <p className={answers[index] === q.correctAnswer ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
-                    Votre réponse : {answers[index]}
-                  </p>
-                  {answers[index] !== q.correctAnswer && (
-                    <p className="text-green-600 font-medium">Réponse correcte : {q.correctAnswer}</p>
-                  )}
-                </div>
-              ))} */}
-              <p className="text-xl font-bold mt-4 text-orange-800">
+              <p className="text-xl font-bold mt-4 text-orange-800 break-words">
                 Score total : {score} / {calculateScore().maxScore} ({(score / calculateScore().maxScore * 100).toFixed(2)}%)
               </p>
-              <p className="text-lg mt-2 text-gray-700">
+              <p className="text-lg mt-2 text-gray-700 break-words">
                 {calculateScore().percentage >= 70 ?
                   "Félicitations ! Vous avez validé ce chapitre." :
                   "Vous n'avez pas obtenu le score minimum requis pour valider ce chapitre. Réessayez !"}
               </p>
               <button
                 onClick={resetQuiz}
-                className="mt-4 bg-orange-600 text-white px-6 py-2 rounded-full hover:bg-orange-700 transition-colors"
+                className="mt-4 bg-orange-600 text-white px-6 py-2 rounded-full hover:bg-orange-700 transition-colors w-full md:w-auto"
               >
                 Réessayer
               </button>

@@ -16,8 +16,7 @@ import 'highlight.js/styles/github.css';
 import '../MarkdownStyles.css';
 import QCM from './QCM';
 import TableOfContents from './TableOfContents';
-import Loading from './Loading'; 
-
+import Loading from './Loading';
 
 const ChapterContent = () => {
   const { courseId, chapterId } = useParams();
@@ -68,7 +67,11 @@ const ChapterContent = () => {
   }, [courseId, chapterId]);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth < 768;
+      setIsMobile(newIsMobile);
+      setSidebarOpen(!newIsMobile);
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -122,9 +125,6 @@ const ChapterContent = () => {
       }
       return <code className={className} {...props}>{children}</code>;
     },
-    // img: ({node, ...props}) => (
-    //   <img {...props} style={{maxWidth: '100%', height: 'auto'}} />
-    // ),
   };
 
   if (!course) return <Loading />;
@@ -132,23 +132,29 @@ const ChapterContent = () => {
   return (
     <div className="bg-orange-50 min-h-screen font-sans flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow-md p-4">
+      <header className="bg-white shadow-md p-4 fixed top-0 left-0 right-0 z-50">
         <div className="container mx-auto flex justify-between items-center">
           <button
             onClick={() => navigate('/dashboard')}
             className="flex items-center text-orange-600 hover:text-orange-800 transition-colors"
           >
             <ChevronLeft size={20} />
-            <span className="ml-2">Retour au tableau de bord</span>
+            <span className="ml-2 hidden md:inline">Retour au tableau de bord</span>
           </button>
           <h1 className="text-2xl font-bold text-orange-600">AIBoost</h1>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="md:hidden text-orange-600"
+          >
+            {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 pt-16">
         {/* Sidebar */}
-        <aside className={`bg-white w-64 shadow-md transition-all duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-64'}`}>
-          <div className="p-4">
+        <aside className={`fixed top-16 left-0 bottom-0 w-64 bg-white shadow-md transition-all duration-300 z-40 ${sidebarOpen ? 'translate-x-0' : '-translate-x-64'}`}>
+          <div className="p-4 overflow-y-auto h-full">
             <h2 className="text-xl font-bold text-orange-600 mb-4">{course.title}</h2>
             <ul className="space-y-2">
               {course.chapters.map((chapter) => (
@@ -166,9 +172,10 @@ const ChapterContent = () => {
             </ul>
           </div>
         </aside>
+
         {/* Main content */}
-        <div className="flex-1 flex overflow-hidden">
-          <main className="flex-1 p-8 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-8 overflow-y-auto ml-0 md:ml-64 lg:mr-64">
+          <div className="max-w-3xl mx-auto">
             <h1 className="text-3xl font-bold mb-6">{course.chapters.find(ch => ch.id === parseInt(chapterId))?.title}</h1>
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="markdown-body">
@@ -180,11 +187,13 @@ const ChapterContent = () => {
                 </ReactMarkdown>
               </div>
             </div>
-          </main>
-          <aside className="w-64 p-4 sticky top-0 max-h-screen overflow-y-auto">
-            <TableOfContents headings={headings} />
-          </aside>
-        </div>
+          </div>
+        </main>
+
+        {/* Table of Contents */}
+        <aside className="hidden lg:block w-64 fixed top-16 right-0 bottom-0 p-4 overflow-y-auto bg-white shadow-md">
+          <TableOfContents headings={headings} />
+        </aside>
       </div>
     </div>
   );

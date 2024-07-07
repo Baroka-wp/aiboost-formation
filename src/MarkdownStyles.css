@@ -26,6 +26,7 @@
   font-weight: 600;
   line-height: 1.25;
   color: #e86600; /* Couleur orange pour les titres */
+  white-space: break-spaces !important;
 }
 
 .markdown-body h1 {
@@ -174,4 +175,14 @@
   background-color: #f8f8f8; /* Couleur de fond de la table des matières */
   padding: 10px;
   border-right: 1px solid #ddd;
+}
+
+.markdown-body .truncate {
+    overflow: auto !important;
+    text-overflow: initial !important;
+    white-space: break-spaces !important;
+}
+
+.markdown-body span {
+  white-space: break-spaces !important;
 }
