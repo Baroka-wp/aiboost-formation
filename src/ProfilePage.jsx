@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, LogOut } from 'lucide-react';
-import { getEnrolledCourses, getUserProfile } from './services/api';
+import { getEnrolledCourses, getUserProfile, getEnrolledCoursesProgress } from './services/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext.jsx';
-import Loading from './components/Loading'; 
+import Loading from './components/Loading';
 
 const ProfilePage = () => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
+  const [courseProgress, setCourseProgress] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -15,16 +16,23 @@ const ProfilePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if(user){
+      if (user) {
         try {
           setLoading(true);
-          const [coursesResponse, profileResponse] = await Promise.all([
-            getEnrolledCourses(user?.id),
-            getUserProfile(user?.id)
+          const [coursesResponse, profileResponse, progressResponse] = await Promise.all([
+            getEnrolledCourses(user.id),
+            getUserProfile(user.id),
+            getEnrolledCoursesProgress(user.id)
           ]);
 
           setEnrolledCourses(coursesResponse.data);
           setUserProfile(profileResponse.data);
+
+          const progressObj = {};
+          progressResponse.data.forEach(p => {
+            progressObj[p.course_id] = p.percentage;
+          });
+          setCourseProgress(progressObj);
         } catch (error) {
           console.error('Error fetching data:', error);
           setError('Failed to fetch data. Please try again.');
@@ -54,8 +62,8 @@ const ProfilePage = () => {
             <button onClick={() => navigate('/')} className="text-orange-600 hover:text-orange-700 transition-colors">
               Accueil
             </button>
-            <button 
-              onClick={handleLogout} 
+            <button
+              onClick={handleLogout}
               className="bg-orange-600 text-white px-4 py-2 rounded-full hover:bg-orange-700 transition-colors flex items-center"
             >
               <LogOut size={18} className="mr-2" />
@@ -80,6 +88,17 @@ const ProfilePage = () => {
               <div key={course.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                 <h2 className="text-xl font-semibold mb-2">{course.title}</h2>
                 <p className="text-gray-600 mb-4">{course.description}</p>
+                <div className="mb-4">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div
+                      className="bg-orange-600 h-2.5 rounded-full"
+                      style={{ width: `${courseProgress[course.id] || 0}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Progression : {courseProgress[course.id] || 0}%
+                  </p>
+                </div>
                 <button
                   onClick={() => navigate(`/course/${course.id}`)}
                   className="bg-orange-600 text-white px-4 py-2 rounded-full hover:bg-orange-700 transition-colors flex items-center justify-center w-full"

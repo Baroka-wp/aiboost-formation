@@ -28,7 +28,7 @@ const QCM = ({ title, questions, onComplete }) => {
     const result = calculateScore();
     setScore(result.score);
     setIsSubmitted(true);
-    onComplete(result.percentage >= 70);
+    onComplete(result.percentage);
   };
 
   const resetQuiz = () => {
@@ -109,7 +109,7 @@ const QCM = ({ title, questions, onComplete }) => {
                 Score total : {score} / {calculateScore().maxScore} ({(score / calculateScore().maxScore * 100).toFixed(2)}%)
               </p>
               <p className="text-lg mt-2 text-gray-700 break-words">
-                {calculateScore().percentage >= 70 ?
+                {calculateScore().percentage >= 80 ?
                   "Félicitations ! Vous avez validé ce chapitre." :
                   "Vous n'avez pas obtenu le score minimum requis pour valider ce chapitre. Réessayez !"}
               </p>

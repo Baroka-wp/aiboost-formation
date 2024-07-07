@@ -186,3 +186,7 @@
 .markdown-body span {
   white-space: break-spaces !important;
 }
+
+.markdown-body p {
+  white-space: break-spaces !important;
+}

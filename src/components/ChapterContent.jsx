@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCourseById } from '../services/api';
+import { getCourseById, getUserProgress, updateUserProgress, validateChapter } from '../services/api';
 import { Menu, X, ChevronLeft, CheckCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -27,44 +27,61 @@ const ChapterContent = () => {
   const [userProgress, setUserProgress] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+  const [isLoading, setIsLoading] = useState(true);
+
+
+  const fetchData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const [courseResponse, progressResponse] = await Promise.all([
+        getCourseById(courseId),
+        getUserProgress(courseId)
+      ]);
+
+      setCourse(courseResponse.data);
+      setUserProgress(progressResponse.data);
+
+      const currentChapter = courseResponse.data.chapters.find(ch => ch.id === parseInt(chapterId));
+
+      if (currentChapter) {
+        import(`../contents/course${courseId}/chapter${currentChapter.position}.md`)
+          .then(module => fetch(module.default))
+          .then(res => res.text())
+          .then(text => {
+            setChapterContent(text);
+            const extractedHeadings = text.match(/^#{1,6}.+$/gm).map(heading => {
+              const level = heading.match(/^#+/)[0].length;
+              const text = heading.replace(/^#+\s*/, '');
+              const id = text.toLowerCase().replace(/[^\w]+/g, '-');
+              return { level, text, id };
+            });
+            setHeadings(extractedHeadings);
+          })
+          .catch(error => {
+            console.error("Erreur lors du chargement du contenu :", error);
+            setChapterContent("Erreur de chargement du contenu. Veuillez réessayer.");
+          });
+      } else {
+        setChapterContent("Chapter not found.");
+      }
+
+      console.log(progressResponse.data)
+
+      // Mettre à jour la progression de l'utilisateur
+      if (!progressResponse.data?.completed_chapter.includes(parseInt(chapterId))) {
+        await updateUserProgress(courseId, parseInt(chapterId));
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setChapterContent("Error loading content. Please try again.");
+    } finally {
+      setIsLoading(false)
+    }
+  }, [courseId, chapterId]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const courseResponse = await getCourseById(courseId);
-        setCourse(courseResponse.data);
-
-        const currentChapter = courseResponse.data.chapters.find(ch => ch.id === parseInt(chapterId));
-
-        if (currentChapter) {
-          import(`../contents/course${courseId}/chapter${currentChapter.position}.md`)
-            .then(module => fetch(module.default))
-            .then(res => res.text())
-            .then(text => {
-              setChapterContent(text);
-              const extractedHeadings = text.match(/^#{1,6}.+$/gm).map(heading => {
-                const level = heading.match(/^#+/)[0].length;
-                const text = heading.replace(/^#+\s*/, '');
-                const id = text.toLowerCase().replace(/[^\w]+/g, '-');
-                return { level, text, id };
-              });
-              setHeadings(extractedHeadings);
-            })
-            .catch(error => {
-              console.error("Erreur lors du chargement du contenu :", error);
-              setChapterContent("Erreur de chargement du contenu. Veuillez réessayer.");
-            });
-        } else {
-          setChapterContent("Chapter not found.");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setChapterContent("Error loading content. Please try again.");
-      }
-    }
-
     fetchData();
-  }, [courseId, chapterId]);
+  }, [fetchData])
 
   useEffect(() => {
     const handleResize = () => {
@@ -76,17 +93,19 @@ const ChapterContent = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleChapterComplete = async (isCompleted) => {
-    if (isCompleted) {
+  const handleChapterComplete = useCallback(async (score) => {
+    if (score >= 80) {
       try {
-        const updatedProgress = await updateUserProgress(courseId, chapterId, true);
-        setUserProgress(updatedProgress.data);
-        console.log("Chapter completed!");
+        const response = await validateChapter(courseId, parseInt(chapterId), score);
+        setUserProgress(response.data);
+        console.log("Chapter completed and validated!");
       } catch (error) {
-        console.error("Error updating progress:", error);
+        console.error("Error validating chapter:", error);
       }
+    } else {
+      console.log("Chapter not validated. Score below 80%");
     }
-  };
+  }, [courseId, chapterId]);
 
   const renderers = {
     code: ({ node, inline, className, children, ...props }) => {
@@ -127,7 +146,7 @@ const ChapterContent = () => {
     },
   };
 
-  if (!course) return <Loading />;
+  if (isLoading) return <Loading />;
 
   return (
     <div className="bg-orange-50 min-h-screen font-sans flex flex-col">
@@ -163,7 +182,7 @@ const ChapterContent = () => {
                   className={`flex items-center cursor-pointer p-2 rounded ${parseInt(chapterId) === chapter.id ? 'bg-orange-100' : 'hover:bg-orange-50'}`}
                   onClick={() => navigate(`/course/${courseId}/chapter/${chapter.id}`)}
                 >
-                  {userProgress?.completedChapters.includes(chapter.id) && (
+                  {userProgress?.completed_chapters.includes(chapter.id) && (
                     <CheckCircle size={16} className="text-green-500 mr-2" />
                   )}
                   <span>{chapter.title}</span>

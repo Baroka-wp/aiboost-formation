@@ -22,7 +22,6 @@ api.interceptors.response.use(
   (response) => response.data,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Handle token expiration (e.g., redirect to login)
       localStorage.removeItem('token');
       window.location.href = '/login';
     }
@@ -38,5 +37,9 @@ export const getEnrolledCourses = (userId) => api.get('/courses/enrolled', { use
 export const getAllCourses = () => api.get('/courses');
 export const getCourseById = (courseId) => api.get(`/courses/${courseId}`);
 export const enrollCourse = (courseId) => api.post(`/courses/enroll/${courseId}`);
+export const getUserProgress = (courseId) => api.get(`/courses/${courseId}/progress`);
+export const updateUserProgress = (courseId, chapterId) => api.post(`/courses/${courseId}/progress`, { chapterId });
+export const validateChapter = (courseId, chapterId, score) => api.post(`/courses/${courseId}/validate-chapter`, { chapterId, score });
+export const getEnrolledCoursesProgress = (userId) => api.get(`/courses/enrolled/progress/${userId}`);
 
 export default api;
