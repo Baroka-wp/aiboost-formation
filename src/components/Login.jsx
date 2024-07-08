@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../services/api.js';
+import { login as apiLogin} from '../services/api.js';
 import { User, Lock, ArrowLeft } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -9,17 +10,25 @@ const Login = () => {
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const { login: authLogin, checkAuth } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      const response = await login(email, password);
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
-      navigate('/profile');
+      const response = await apiLogin(email, password);
+      authLogin(response.token, response.user);
+      checkAuth();
+      if (response.user.role === 'mentor') {
+        navigate('/mentor');
+      } else if (response.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/profile');
+      }
     } catch (err) {
-      setError('Invalid email or password');
+      console.log(err)
+      setError(err.response.data.message);
     }
   };
 

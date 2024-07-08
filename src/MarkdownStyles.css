@@ -198,3 +198,7 @@
 .markdown-body button {
   white-space: break-spaces !important;
 }
+
+.markdown-body div {
+  white-space: break-spaces !important;
+}

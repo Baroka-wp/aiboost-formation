@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCourseById, getUserProgress, validateChapter, submitLink, getSubmissionStatus } from '../services/api';
+import { getCourseById, getUserProgress, updateUserProgress, submitLink, getSubmissionStatus, updateSubmissionLink } from '../services/api';
 import { Menu, X, ChevronLeft, CheckCircle, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import YouTube from 'react-youtube';
@@ -27,8 +27,8 @@ const ChapterContent = () => {
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [isLoading, setIsLoading] = useState(true);
   const [submissionStatus, setSubmissionStatus] = useState('not_submitted');
-  const [hasSubmission, setHasSubmission] = useState(false);
-  const [hasQcm, sethasQcm] = useState(false);
+  const [mentorFeedback, setMentorFeedback] = useState('');
+  const [submission, setSubmission] = useState({})
 
   const { user } = useAuth();
 
@@ -43,7 +43,9 @@ const ChapterContent = () => {
 
       setCourse(courseResponse.data);
       setUserProgress(progressResponse.data);
+      setSubmission(statusData.data)
       setSubmissionStatus(statusData.data?.status)
+      setMentorFeedback(statusData.data?.mentor_comment)
 
       const currentChapter = courseResponse.data.chapters.find(ch => ch.id === parseInt(chapterId));
 
@@ -81,12 +83,6 @@ const ChapterContent = () => {
   }, [fetchData])
 
   useEffect(() => {
-    if(submissionStatus !== 'not_submitted') {
-      setHasSubmission(true)
-    } 
-  }, [submissionStatus])
-
-  useEffect(() => {
     const handleResize = () => {
       const newIsMobile = window.innerWidth < 768;
       setIsMobile(newIsMobile);
@@ -96,46 +92,36 @@ const ChapterContent = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleChapterComplete = useCallback(async (score) => {
-    sethasQcm(true);
-    const isScoreValid =  hasQcm && score >= 80;
-    const canValidateChapter = !hasSubmission || (hasSubmission && submissionStatus === 'approved');
-
-    const validateChapterAndUpdateProgress = async () => {
+  
+ const handleChapterComplete = async (isCompleted) => {
+    if (isCompleted) {
       try {
-        const response = await validateChapter(courseId, parseInt(chapterId), score);
-        setUserProgress(response.data);
-        console.log("Chapter completed and validated!");
+        const updatedProgress = await updateUserProgress(courseId, chapterId, true);
+        setUserProgress(updatedProgress.data);
+        console.log("Chapter completed!");
       } catch (error) {
-        console.error("Error validating chapter:", error);
+        console.error("Error updating progress:", error);
       }
-    };
-
-    if (isScoreValid && canValidateChapter) {
-      await validateChapterAndUpdateProgress();
-    } else if (!isScoreValid) {
-      console.log("Chapter not validated. Score below 80%");
+    }
+  };
+  
+  
+ const handleLinkSubmit = useCallback(async (courseId, chapterId, link) => {
+  try {
+    let updatedSubmission;
+    if (submission && (submission.status === 'needs_revision' || submission.status === 'pending')) {
+      updatedSubmission = await updateSubmissionLink(submission.id, link);
     } else {
-      console.log("Chapter not validated. Submission not approved yet.");
+      updatedSubmission = await submitLink(courseId, chapterId, link, user?.id);
     }
-  }, [courseId, chapterId, hasSubmission, submissionStatus, validateChapter, setUserProgress]);
-
-
-  const handleLinkSubmit = useCallback(async (courseId, chapterId, link) => {
-    setHasSubmission(true)
-    try {
-      const userId = user?.id
-      await submitLink(courseId, chapterId, link, userId);
-      setSubmissionStatus('pending');
-    } catch (error) {
-      console.error("Error submitting link:", error);
-      throw error;
-    }
-  }, []);
-
-
-  console.log(hasQcm, hasSubmission)
-
+    
+    setSubmission(updatedSubmission);
+    setSubmissionStatus('pending');
+  } catch (error) {
+    console.error("Error submitting link:", error);
+    throw error;
+  }
+}, [submission, user]);
 
   const renderers = {
     code: ({ node, inline, className, children, ...props }) => {
@@ -166,6 +152,7 @@ const ChapterContent = () => {
                 chapterId={chapterId}
                 onSubmit={handleLinkSubmit}
                 initialStatus={submissionStatus}
+                initialFeedback={mentorFeedback}
               />
             );
           default:
@@ -219,7 +206,7 @@ const ChapterContent = () => {
       <header className="bg-white shadow-md p-4 fixed top-0 left-0 right-0 z-50">
         <div className="container mx-auto flex justify-between items-center">
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/profile')}
             className="flex items-center text-orange-600 hover:text-orange-800 transition-colors"
           >
             <ChevronLeft size={20} />
@@ -247,8 +234,8 @@ const ChapterContent = () => {
                   className={`flex items-center cursor-pointer p-2 rounded ${parseInt(chapterId) === chapter.id ? 'bg-orange-100' : 'hover:bg-orange-50'}`}
                   onClick={() => navigate(`/course/${courseId}/chapter/${chapter.id}`)}
                 >
-                  { userProgress?.completed_chapters.includes(chapter.id) && (
-                    <CheckCircle size={16} className="text-green-500 mr-2" />
+                  {userProgress?.completed_chapters.includes(chapter.id) && (
+                    <CheckCircle size={26} className="text-green-500 mr-2" />
                   )}
                   <span>{chapter.title}</span>
                 </li>

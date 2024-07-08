@@ -5,17 +5,25 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true); // Ajout de l'état de chargement
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    checkAuth();
+  }, []);
+
+
+  const checkAuth = () => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     if (token && userData) {
       setUser(JSON.parse(userData));
       setIsAuthenticated(true);
+    } else {
+      setUser(null);
+      setIsAuthenticated(false);
     }
-    setLoading(false); // Chargement terminé
-  }, []);
+    setLoading(false);
+  };
 
   const login = (token, userData) => {
     localStorage.setItem('token', token);
@@ -30,9 +38,9 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setIsAuthenticated(false);
   };
-
+  
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, logout, checkAuth }}>
       {children}
     </AuthContext.Provider>
   );

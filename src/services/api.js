@@ -39,10 +39,13 @@ export const getCourseById = (courseId) => api.get(`/courses/${courseId}`);
 export const enrollCourse = (courseId) => api.post(`/courses/enroll/${courseId}`);
 export const getUserProgress = (courseId) => api.get(`/courses/${courseId}/progress`);
 export const updateUserProgress = (courseId, chapterId) => api.post(`/courses/${courseId}/progress`, { chapterId });
-export const validateChapter = (courseId, chapterId, score) => api.post(`/courses/${courseId}/validate-chapter`, { chapterId, score });
+export const validateChapter = (courseId, chapterId, score, studentId) => api.post(`/courses/${courseId}/validate-chapter`, { chapterId, score, studentId });
 export const getEnrolledCoursesProgress = (userId) => api.get(`/courses/enrolled/progress/${userId}`);
 export const submitLink = (courseId, chapterId, link, userId) => api.post(`/courses/${courseId}/chapters/${chapterId}/submit-link`, { link, userId });
+export const updateSubmissionLink = (submissionId, link) => api.put(`/courses/submissions/${submissionId}`, { link });
 export const getSubmissionStatus = async (courseId, chapterId, userId) => api.get(`/courses/${courseId}/chapters/${chapterId}/submission-status`, { userId });
-
-
+export const getAllUsers = () => api.get('/admin/users');
+export const createUser = (userData) => api.post('/admin/users', userData);
+export const getMentorSubmissions = () => api.get('/admin/mentor/submissions');
+export const updateSubmission = (submissionId, status, mentor_comment) => api.put(`/admin/mentor/submissions/${submissionId}`, { status, mentor_comment });
 export default api;

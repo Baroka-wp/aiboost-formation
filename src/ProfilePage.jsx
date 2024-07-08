@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, LogOut } from 'lucide-react';
+import { ChevronRight, LogOut, User } from 'lucide-react';
 import { getEnrolledCourses, getUserProfile, getEnrolledCoursesProgress } from './services/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext.jsx';
@@ -13,7 +13,7 @@ const ProfilePage = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
-
+  
   useEffect(() => {
     const fetchData = async () => {
       if (user) {
@@ -62,6 +62,15 @@ const ProfilePage = () => {
             <button onClick={() => navigate('/')} className="text-orange-600 hover:text-orange-700 transition-colors">
               Accueil
             </button>
+            {user.role === 'admin' && (
+              <button
+                onClick={() => navigate('/admin')}
+                className="bg-orange-600 text-white px-4 py-2 rounded-full hover:bg-orange-700 transition-colors flex items-center"
+              >
+                <User size={18} className="mr-2" />
+                Tableau de bord admin
+              </button>
+            )}
             <button
               onClick={handleLogout}
               className="bg-orange-600 text-white px-4 py-2 rounded-full hover:bg-orange-700 transition-colors flex items-center"
@@ -69,6 +78,7 @@ const ProfilePage = () => {
               <LogOut size={18} className="mr-2" />
               Déconnexion
             </button>
+
           </nav>
         </div>
       </header>
