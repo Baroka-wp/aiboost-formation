@@ -8,6 +8,7 @@ import { getAllUsers, getAllCourses } from './services/api';
 import MentorManagement from './components/MentorManagement';
 import StudentManagement from './components/StudentManagement';
 import CourseManagement from './components/CourseManagement';
+import Dashboard from './components/Dashboard';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -78,11 +79,11 @@ const AdminDashboard = () => {
 
       {/* Main content */}
       <main className="flex-1 p-8 overflow-y-auto">
-        <h1 className="text-3xl font-bold mb-6">
+        {/* <h1 className="text-3xl font-bold mb-6">
           {sidebarItems.find(item => item.value === activeTab)?.label}
-        </h1>
+        </h1> */}
 
-        {activeTab === 'home' && <div>Contenu de l'accueil</div>}
+        {activeTab === 'home' && <div><Dashboard /></div>}
         {activeTab === 'mentors' && <MentorManagement />}
         {activeTab === 'students' && <div><StudentManagement /></div>}
         {activeTab === 'courses' && <div><CourseManagement /></div>}

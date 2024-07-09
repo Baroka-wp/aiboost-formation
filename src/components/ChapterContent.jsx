@@ -50,23 +50,14 @@ const ChapterContent = () => {
       const currentChapter = courseResponse.data.chapters.find(ch => ch.id === parseInt(chapterId));
 
       if (currentChapter) {
-        import(`../contents/course${courseId}/chapter${currentChapter.position}.md`)
-          .then(module => fetch(module.default))
-          .then(res => res.text())
-          .then(text => {
-            setChapterContent(text);
-            const extractedHeadings = text.match(/^#{1,6}.+$/gm).map(heading => {
-              const level = heading.match(/^#+/)[0].length;
-              const text = heading.replace(/^#+\s*/, '');
-              const id = text.toLowerCase().replace(/[^\w]+/g, '-');
-              return { level, text, id };
-            });
-            setHeadings(extractedHeadings);
-          })
-          .catch(error => {
-            console.error("Erreur lors du chargement du contenu :", error);
-            setChapterContent("Erreur de chargement du contenu. Veuillez réessayer.");
-          });
+        setChapterContent(currentChapter.content);
+        const extractedHeadings = currentChapter.content.match(/^#{1,6}.+$/gm).map(heading => {
+          const level = heading.match(/^#+/)[0].length;
+          const text = heading.replace(/^#+\s*/, '');
+          const id = text.toLowerCase().replace(/[^\w]+/g, '-');
+          return { level, text, id };
+        });
+        setHeadings(extractedHeadings);
       } else {
         setChapterContent("Chapter not found.");
       }
@@ -92,8 +83,8 @@ const ChapterContent = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  
- const handleChapterComplete = async (isCompleted) => {
+
+  const handleChapterComplete = async (isCompleted) => {
     if (isCompleted) {
       try {
         const updatedProgress = await updateUserProgress(courseId, chapterId, true);
@@ -104,24 +95,24 @@ const ChapterContent = () => {
       }
     }
   };
-  
-  
- const handleLinkSubmit = useCallback(async (courseId, chapterId, link) => {
-  try {
-    let updatedSubmission;
-    if (submission && (submission.status === 'needs_revision' || submission.status === 'pending')) {
-      updatedSubmission = await updateSubmissionLink(submission.id, link);
-    } else {
-      updatedSubmission = await submitLink(courseId, chapterId, link, user?.id);
+
+
+  const handleLinkSubmit = useCallback(async (courseId, chapterId, link) => {
+    try {
+      let updatedSubmission;
+      if (submission && (submission.status === 'needs_revision' || submission.status === 'pending')) {
+        updatedSubmission = await updateSubmissionLink(submission.id, link);
+      } else {
+        updatedSubmission = await submitLink(courseId, chapterId, link, user?.id);
+      }
+
+      setSubmission(updatedSubmission);
+      setSubmissionStatus('pending');
+    } catch (error) {
+      console.error("Error submitting link:", error);
+      throw error;
     }
-    
-    setSubmission(updatedSubmission);
-    setSubmissionStatus('pending');
-  } catch (error) {
-    console.error("Error submitting link:", error);
-    throw error;
-  }
-}, [submission, user]);
+  }, [submission, user]);
 
   const renderers = {
     code: ({ node, inline, className, children, ...props }) => {

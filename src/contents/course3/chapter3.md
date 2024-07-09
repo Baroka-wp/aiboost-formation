@@ -1,4 +1,4 @@
-# Chapitre : Collaboration homme-machine dans l'art
+# Collaboration homme-machine dans l'art
 
 ## Introduction
 

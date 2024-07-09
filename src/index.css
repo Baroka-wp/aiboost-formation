@@ -32,3 +32,7 @@
 .main-content {
   margin-top: 70px; /* Hauteur de la barre de navigation pour éviter le chevauchement */
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}
