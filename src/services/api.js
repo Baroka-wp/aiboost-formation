@@ -54,6 +54,16 @@ export const deleteUser = (userId) => api.delete(`/admin/users/${userId}`);
 export const suspendUser = (userId, isSuspended) => api.put(`/admin/users/${userId}/suspend`, { is_suspended: isSuspended });
 export const enrollUserInCourse = (userId, courseId) => api.post(`/admin/users/${userId}/enroll`, { course_id: courseId });
 export const getCurrentUserProgress = (userId) => api.get(`/admin/users/${userId}/progress`);
+export const getMentors = (page = 1, limit = 10) => api.get(`/admin/mentors?page=${page}&limit=${limit}`);
+export const getStudents = (page = 1, limit = 10) => api.get(`/admin/students?page=${page}&limit=${limit}`);
 
+export const createCourse = (courseData) => api.post('/courses', courseData);
+export const updateCourse = (courseId, courseData) => api.put(`/courses/${courseId}`, courseData);
+export const deleteCourse = (courseId) => api.delete(`/courses/${courseId}`);
+export const getEnrolledUsers = (courseId) => api.get(`/courses/${courseId}/enrolled-users`);
+export const unenrollUserFromCourse = (courseId, userId) => api.delete(`/courses/${courseId}/enrolled-users/${userId}`);
+export const createChapter = (courseId, chapterData) => api.post(`/courses/${courseId}/chapters`, chapterData);
+export const updateChapter = (courseId, chapterId, chapterData) => api.put(`/courses/${courseId}/chapters/${chapterId}`, chapterData);
+export const deleteChapter = (courseId, chapterId) => api.delete(`/courses/${courseId}/chapters/${chapterId}`);
 
 export default api;
