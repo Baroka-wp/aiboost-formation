@@ -48,4 +48,12 @@ export const getAllUsers = () => api.get('/admin/users');
 export const createUser = (userData) => api.post('/admin/users', userData);
 export const getMentorSubmissions = () => api.get('/admin/mentor/submissions');
 export const updateSubmission = (submissionId, status, mentor_comment) => api.put(`/admin/mentor/submissions/${submissionId}`, { status, mentor_comment });
+export const assignSubmission = (submissionId) => api.post(`/courses/submissions/${submissionId}/assign`);
+export const updateUser = (userId, userData) => api.put(`/admin/users/${userId}`, userData);
+export const deleteUser = (userId) => api.delete(`/admin/users/${userId}`);
+export const suspendUser = (userId, isSuspended) => api.put(`/admin/users/${userId}/suspend`, { is_suspended: isSuspended });
+export const enrollUserInCourse = (userId, courseId) => api.post(`/admin/users/${userId}/enroll`, { course_id: courseId });
+export const getCurrentUserProgress = (userId) => api.get(`/admin/users/${userId}/progress`);
+
+
 export default api;

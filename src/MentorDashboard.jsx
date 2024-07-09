@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
-import { getMentorSubmissions, updateSubmission, validateChapter, updateUserProgress } from './services/api';
-import { ChevronLeft, CheckCircle, XCircle, MessageCircle, ExternalLink, AlertCircle, Clock } from 'lucide-react';
+import { getMentorSubmissions, updateSubmission, validateChapter, assignSubmission } from './services/api';
+import { ChevronLeft, CheckCircle, XCircle, MessageCircle, ExternalLink, AlertCircle, Clock, BookOpen, UserCheck } from 'lucide-react';
 import Loading from './components/Loading';
+import ReactMarkdown from 'react-markdown';
 
 const MentorDashboard = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [feedback, setFeedback] = useState('');
   const navigate = useNavigate();
   const { user } = useAuth();
+
 
   useEffect(() => {
     if (user && (user.role === 'mentor' || user.role === 'admin')) {
@@ -27,34 +31,44 @@ const MentorDashboard = () => {
       const response = await getMentorSubmissions();
       setSubmissions(response.data);
     } catch (err) {
-      if (err.response && err.response.status === 403) {
-        setError('Access denied. You must be a mentor or admin to view this page.');
-      } else {
-        setError('Failed to fetch submissions');
-      }
+      setError('Failed to fetch submissions');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateSubmission = async (submissionId, status, feedback, courseId, chapterId, studentId) => {
+  const handleUpdateSubmission = async (submissionId, status) => {
     try {
       await updateSubmission(submissionId, status, feedback);
       if (status === 'approved') {
-        await validateChapter(courseId, parseInt(chapterId), 100, studentId);
+        await validateChapter(selectedSubmission.course_id, parseInt(selectedSubmission.chapter_id), 100, selectedSubmission.user_id);
       }
       fetchSubmissions();
+      setSelectedSubmission(null);
+      setFeedback('');
     } catch (err) {
       setError('Failed to update submission');
     }
   };
 
-  const getStatusIcon = (status) => {
+  const handleAssignSubmission = async (submissionId) => {
+    try {
+      await assignSubmission(submissionId);
+      fetchSubmissions();
+    } catch (err) {
+      setError('Failed to assign submission');
+    }
+  };
+
+  const getStatusIcon = (status, mentorId) => {
+    if (mentorId) {
+      return <UserCheck className="text-blue-500" size={24} title="En cours de correction" />;
+    }
     switch (status) {
       case 'pending':
-        return <Clock className="text-orange-500" size={30} />;
+        return <Clock className="text-orange-500" size={24} title="En attente" />;
       case 'needs_revision':
-        return <AlertCircle className="text-yellow-500" size={30} />;
+        return <AlertCircle className="text-yellow-500" size={24} title="Révision nécessaire" />;
       default:
         return null;
     }
@@ -100,7 +114,6 @@ const MentorDashboard = () => {
               <thead className="bg-orange-100">
                 <tr>
                   <th className="px-4 py-2 text-left">Statut</th>
-                  <th className="px-4 py-2 text-left">Cours</th>
                   <th className="px-4 py-2 text-left">Chapitre</th>
                   <th className="px-4 py-2 text-left">Étudiant</th>
                   <th className="px-4 py-2 text-left">Actions</th>
@@ -110,12 +123,8 @@ const MentorDashboard = () => {
                 {submissions.map((submission) => (
                   <tr key={submission.id} className="border-b hover:bg-orange-50">
                     <td className="px-4 py-2">
-                      <div className="flex items-center">
-                        {getStatusIcon(submission.status)}
-                        <span className="ml-2">{submission.status === 'pending' ? 'En attente' : 'Révision nécessaire'}</span>
-                      </div>
+                      {getStatusIcon(submission.status, submission.mentor_id)}
                     </td>
-                    <td className="px-4 py-2">{submission.courses.title}</td>
                     <td className="px-4 py-2">{submission.chapters.title}</td>
                     <td className="px-4 py-2">
                       <div>
@@ -134,31 +143,27 @@ const MentorDashboard = () => {
                         >
                           <ExternalLink size={20} />
                         </a>
-                        <button
-                          onClick={() => handleUpdateSubmission(
-                            submission.id,
-                            'approved',
-                            'Bon travail !',
-                            submission.course_id,
-                            submission.chapter_id,
-                            submission.user_id
-                          )}
-                          className="text-green-500 hover:text-green-600"
-                          title="Approuver"
+                        <a
+                          href={`/course/${submission.course_id}/chapter/${submission.chapter_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:text-blue-600"
+                          title="Voir le chapitre"
                         >
-                          <CheckCircle size={20} />
-                        </button>
+                          <BookOpen size={20} />
+                        </a>
                         <button
                           onClick={() => {
-                            const feedback = prompt('Entrez votre feedback pour l\'étudiant :');
-                            if (feedback) {
-                              handleUpdateSubmission(submission.id, 'needs_revision', feedback, submission.course_id, submission.chapter_id, submission.user_id);
+                            setSelectedSubmission(submission);
+                            setFeedback('');
+                            if (!submission.mentor_id) {
+                              handleAssignSubmission(submission.id);
                             }
                           }}
-                          className="text-yellow-500 hover:text-yellow-600"
-                          title="Demander une révision"
+                          className="text-green-500 hover:text-green-600"
+                          title="Examiner la soumission"
                         >
-                          <MessageCircle size={20} />
+                          <UserCheck size={20} />
                         </button>
                       </div>
                     </td>
@@ -166,6 +171,53 @@ const MentorDashboard = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {selectedSubmission && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <h3 className="text-xl font-bold mb-4">{selectedSubmission.chapters.title}</h3>
+              <p className="mb-4">Étudiant : {selectedSubmission.users.full_name}</p>
+              <a
+                href={selectedSubmission.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-orange-600 hover:text-orange-700 flex items-center mb-4"
+              >
+                <ExternalLink size={20} className="mr-2" />
+                Voir le travail soumis
+              </a>
+              <textarea
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Entrez votre feedback ici..."
+                className="w-full p-2 border rounded mb-4"
+                rows="4"
+              />
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => handleUpdateSubmission(selectedSubmission.id, 'needs_revision')}
+                  className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition-colors flex items-center"
+                >
+                  <MessageCircle size={20} className="mr-2" />
+                  Demander une révision
+                </button>
+                <button
+                  onClick={() => handleUpdateSubmission(selectedSubmission.id, 'approved')}
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors flex items-center"
+                >
+                  <CheckCircle size={20} className="mr-2" />
+                  Approuver
+                </button>
+              </div>
+              <button
+                onClick={() => setSelectedSubmission(null)}
+                className="mt-4 text-gray-600 hover:text-gray-800"
+              >
+                Fermer
+              </button>
+            </div>
           </div>
         )}
       </main>
