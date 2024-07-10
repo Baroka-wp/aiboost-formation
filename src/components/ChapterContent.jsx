@@ -22,6 +22,7 @@ const ChapterContent = () => {
   const [course, setCourse] = useState(null);
   const [chapterContent, setChapterContent] = useState('');
   const [headings, setHeadings] = useState([]);
+  const [error, setError] = useState(null);
   const [userProgress, setUserProgress] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
@@ -29,10 +30,13 @@ const ChapterContent = () => {
   const [submissionStatus, setSubmissionStatus] = useState('not_submitted');
   const [mentorFeedback, setMentorFeedback] = useState('');
   const [submission, setSubmission] = useState({})
-
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   const fetchData = useCallback(async () => {
+    if (!isAuthenticated) {
+      navigate(`/course/${courseId}`);
+      return;
+    }
     try {
       setIsLoading(true);
       const [courseResponse, progressResponse, statusData] = await Promise.all([
@@ -46,6 +50,11 @@ const ChapterContent = () => {
       setSubmission(statusData.data)
       setSubmissionStatus(statusData.data?.status)
       setMentorFeedback(statusData.data?.mentor_comment)
+
+      if (!user.enrolled_courses.includes(parseInt(courseId))) {
+        navigate(`/course/${courseId}`);
+        return;
+      }
 
       const currentChapter = courseResponse.data.chapters.find(ch => ch.id === parseInt(chapterId));
 
@@ -190,7 +199,6 @@ const ChapterContent = () => {
   };
 
   if (isLoading) return <Loading />;
-
   return (
     <div className="bg-orange-50 min-h-screen font-sans flex flex-col">
       {/* Header */}

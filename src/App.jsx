@@ -6,6 +6,7 @@ import ChapterContent from './components/ChapterContent';
 import CoursePresentation from './components/CoursePresentation';
 import MentorDashboard from './MentorDashboard';
 import AdminDashboard from './AdminDashboard';
+import RegistrationPage from './components/RegistrationPage';
 import Login from './components/Login';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Loading from './components/Loading';
@@ -37,9 +38,10 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
+           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/dashboard" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="/course/:courseId" element={<ProtectedRoute><CoursePresentation /></ProtectedRoute>} />
+          <Route path="/course/:courseId" element={<CoursePresentation />} />
           <Route path="/course/:courseId/chapter/:chapterId" element={<ProtectedRoute><ChapterContent /></ProtectedRoute>} />
           <Route path="/mentor" element={
             <ProtectedRoute allowedRoles={['mentor', 'admin']}>

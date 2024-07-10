@@ -32,7 +32,7 @@ api.interceptors.response.use(
 export const login = (email, password) => api.post('/auth/login', { email, password });
 export const register = (email, password, username, full_name) => api.post('/auth/register', { email, password, username, full_name });
 export const getUserProfile = (userId) => api.get(`/auth/users/${userId}`);
-export const updateUserProfile = (data) => api.put('/auth/users/profile', data);
+export const updateUserProfile = (data, userId) => api.put(`/auth/users/${userId}`, data);
 export const getEnrolledCourses = (userId) => api.get('/courses/enrolled', { userId });
 export const getAllCourses = () => api.get('/courses');
 export const getCourseById = (courseId) => api.get(`/courses/${courseId}`);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CreditCard, User, Check } from 'lucide-react';
 import { register, enrollCourse } from '../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 
 
 const InscriptionFormModal = ({ isOpen, onClose, courseTitle, courseId, onSuccess, isAuthenticated }) => {
+  const { login, user, updateUserInfo } = useAuth();
   const [step, setStep] = useState(isAuthenticated ? 2 : 1);
   const [formData, setFormData] = useState({
     nom: '',
@@ -18,7 +19,6 @@ const InscriptionFormModal = ({ isOpen, onClose, courseTitle, courseId, onSucces
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { login, user } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -27,6 +27,7 @@ const InscriptionFormModal = ({ isOpen, onClose, courseTitle, courseId, onSucces
         nom: user.full_name || '',
         email: user.email || ''
       }));
+      setStep(2);
     }
   }, [isAuthenticated, user]);
 
@@ -38,7 +39,7 @@ const InscriptionFormModal = ({ isOpen, onClose, courseTitle, courseId, onSucces
     e.preventDefault();
     setLoading(true);
     setError(null);
- try {
+    try {
       if (!isAuthenticated) {
         const response = await register(formData.email, formData.password, formData.nom, formData.nom);
         await login(response.data.token, response.data.user);
@@ -47,10 +48,14 @@ const InscriptionFormModal = ({ isOpen, onClose, courseTitle, courseId, onSucces
       // Inscrire l'utilisateur au cours
       await enrollCourse(courseId);
 
+      // Mettre à jour les informations de l'utilisateur
+      const updatedEnrolledCourses = [...(user.enrolled_courses || []), parseInt(courseId)];
+      updateUserInfo({ enrolled_courses: updatedEnrolledCourses });
+
       setStep(3);
       setTimeout(() => {
         onClose();
-        navigate('/profile');
+        onSuccess();
       }, 2000);
 
     } catch (error) {
