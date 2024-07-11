@@ -52,7 +52,7 @@ export const assignSubmission = (submissionId) => api.post(`/courses/submissions
 export const updateUser = (userId, userData) => api.put(`/admin/users/${userId}`, userData);
 export const deleteUser = (userId) => api.delete(`/admin/users/${userId}`);
 export const suspendUser = (userId, isSuspended) => api.put(`/admin/users/${userId}/suspend`, { is_suspended: isSuspended });
-export const enrollUserInCourse = (userId, courseId) => api.post(`/admin/users/${userId}/enroll`, { course_id: courseId });
+// export const enrollUserInCourse = (userId, courseId) => api.post(`/admin/users/${userId}/enroll`, { course_id: courseId });
 export const getCurrentUserProgress = (userId) => api.get(`/admin/users/${userId}/progress`);
 export const getMentors = (page = 1, limit = 10) => api.get(`/admin/mentors?page=${page}&limit=${limit}`);
 export const getStudents = (page = 1, limit = 10) => api.get(`/admin/students?page=${page}&limit=${limit}`);
@@ -64,5 +64,11 @@ export const unenrollUserFromCourse = (courseId, userId) => api.delete(`/courses
 export const createChapter = (courseId, chapterData) => api.post(`/courses/${courseId}/chapters`, chapterData);
 export const updateChapter = (courseId, chapterId, chapterData) => api.put(`/courses/${courseId}/chapters/${chapterId}`, chapterData);
 export const deleteChapter = (courseId, chapterId) => api.delete(`/courses/${courseId}/chapters/${chapterId}`);
+export const getAllCategories = () => api.get('/courses/categories');
+export const createCategory = (name) => api.post('/courses/categories', { name });
+export const getAllTags = () => api.get('/courses/tags');
+export const createTag = (name) => api.post('/courses/tags', { name });
+export const enrollUserInCourse = (courseId, userId) => api.post(`/courses/${courseId}/enroll`, { userId });
+export const searchCourses = (query, category, tags) => api.get('/courses/search', { params: { query, category, tags } });
 
 export default api;

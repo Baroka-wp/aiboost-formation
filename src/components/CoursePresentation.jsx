@@ -4,7 +4,7 @@ import { getCourseById, getEnrolledCourses } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import InscriptionFormModal from './InscriptionFormModal';
 import Loading from './Loading';
-import { Book, Clock, Users, ChevronRight, Home, User } from 'lucide-react';
+import { Book, Clock, Users, ChevronRight, Home, User, Twitter, Facebook, Linkedin } from 'lucide-react';
 import Header from './Header';
 
 
@@ -63,6 +63,27 @@ const CoursePresentation = () => {
     }
   };
 
+  const shareUrl = `${window.location.origin}/course/${courseId}`;
+  const shareText = `Découvrez cette formation intéressante sur AIBoost: ${course?.title}`;
+
+  const handleShare = (platform) => {
+    let url;
+    switch (platform) {
+      case 'twitter':
+        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'facebook':
+        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'linkedin':
+        url = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(course?.title)}&summary=${encodeURIComponent(course?.description)}`;
+        break;
+      default:
+        return;
+    }
+    window.open(url, '_blank');
+  };
+
   if (loading) return <Loading />;
   if (error) return <div className="text-center mt-8 text-red-600">{error}</div>;
   if (!course) return <div className="text-center mt-8">Cours non trouvé</div>;
@@ -73,33 +94,57 @@ const CoursePresentation = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-20 mt-16">
+      <section className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-20">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{course.title}</h1>
-          <p className="text-xl mb-8">{course.description}</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{course?.title}</h1>
+          <p className="text-xl mb-8">{course?.description}</p>
           <div className="flex flex-wrap items-center text-sm md:text-base gap-4 mb-8">
             <div className="flex items-center">
               <Book className="mr-2" size={20} />
-              <span>{course.chapters.length} chapitres</span>
+              <span>{course?.chapters?.length || 0} chapitres</span>
             </div>
             <div className="flex items-center">
               <Clock className="mr-2" size={20} />
-              <span>{course.duration || 'À déterminer'}</span>
+              <span>{course?.duration || 'À déterminer'} heures</span>
             </div>
             <div className="flex items-center">
               <Users className="mr-2" size={20} />
-              <span>{course.enrolled_count || 0} étudiants inscrits</span>
+              <span>{course?.enrolled_count || 0} étudiants inscrits</span>
             </div>
           </div>
-          <button 
-            onClick={handleCourseAction}
-            className="bg-white text-orange-600 px-6 py-3 rounded-full text-lg font-semibold hover:bg-orange-100 transition-colors"
-          >
-            {isEnrolled ? "Continuer le cours" : "S'inscrire au cours"}
-          </button>
+          <div className="flex flex-wrap gap-4 items-center">
+            <button
+              onClick={handleCourseAction}
+              className="bg-white text-orange-600 px-6 py-3 rounded-full text-lg font-semibold hover:bg-orange-100 transition-colors"
+            >
+              {isEnrolled ? "Continuer le cours" : "S'inscrire au cours"}
+            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleShare('twitter')}
+                className="bg-[#1DA1F2] text-white p-2 rounded-full hover:bg-[#1a91da] transition-colors"
+                aria-label="Partager sur Twitter"
+              >
+                <Twitter size={20} />
+              </button>
+              <button
+                onClick={() => handleShare('facebook')}
+                className="bg-[#4267B2] text-white p-2 rounded-full hover:bg-[#365899] transition-colors"
+                aria-label="Partager sur Facebook"
+              >
+                <Facebook size={20} />
+              </button>
+              <button
+                onClick={() => handleShare('linkedin')}
+                className="bg-[#0077B5] text-white p-2 rounded-full hover:bg-[#006699] transition-colors"
+                aria-label="Partager sur LinkedIn"
+              >
+                <Linkedin size={20} />
+              </button>
+            </div>
+          </div>
         </div>
       </section>
-
       {/* Course Content */}
       <main className="container mx-auto p-4 md:p-8">
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -115,7 +160,7 @@ const CoursePresentation = () => {
                 <span className="mr-4 text-orange-600 font-bold">{index + 1}</span>
                 <span className="flex-grow">{chapter.title}</span>
                 {isEnrolled && (
-                  <button 
+                  <button
                     onClick={() => navigate(`/course/${courseId}/chapter/${chapter.id}`)}
                     className="text-orange-600 hover:text-orange-800"
                   >

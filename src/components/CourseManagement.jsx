@@ -9,7 +9,11 @@ import {
   unenrollUserFromCourse,
   createChapter,
   updateChapter,
-  deleteChapter
+  deleteChapter,
+  getAllCategories,
+  createCategory,
+  getAllTags,
+  createTag
 } from '../services/api';
 import {
   Edit, Trash2, Plus, Book, UserPlus,
@@ -45,9 +49,18 @@ const CourseManagement = () => {
   const [sideModalOpen, setSideModalOpen] = useState(false);
   const [expandedCourses, setExpandedCourses] = useState({});
   const [activeTab, setActiveTab] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [duration, setDuration] = useState('');
+  const [tags, setTags] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [newCategory, setNewCategory] = useState('');
+  const [newTag, setNewTag] = useState('');
+  const [selectedTags, setSelectedTags] = useState([]);
 
   useEffect(() => {
     fetchCourses();
+    fetchCategories();
+    fetchTags();
   }, []);
 
   const fetchCourses = async () => {
@@ -62,14 +75,69 @@ const CourseManagement = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await getAllCategories();
+      setCategories(response.data);
+    } catch (err) {
+      setError('Failed to fetch categories');
+    }
+  };
+
+  const handleAddCategory = async () => {
+    try {
+      await createCategory(newCategory);
+      setNewCategory('');
+      fetchCategories();
+    } catch (err) {
+      setError('Failed to create category');
+    }
+  };
+
+  const handleAddTag = async () => {
+    try {
+      await createTag(newTag);
+      setNewTag('');
+      fetchTags();
+    } catch (err) {
+      setError('Failed to create tag');
+    }
+  };
+
+  const handleTagSelection = (tagId) => {
+    setSelectedTags(prev =>
+      prev.includes(tagId)
+        ? prev.filter(id => id !== tagId)
+        : [...prev, tagId]
+    );
+  };
+
+  const fetchTags = async () => {
+    try {
+      const response = await getAllTags();
+      setTags(response.data);
+    } catch (err) {
+      setError('Failed to fetch tags');
+    }
+  };
+
   const handleAddCourse = () => {
-    setSelectedCourse({ title: '', description: '', price: 0 });
+    setSelectedCourse({
+      title: '',
+      description: '',
+      price: 0,
+      category_id: '',
+      duration: '',
+      tags: []
+    });
+    setSelectedTags([]);
     setModalType('addCourse');
     setShowModal(true);
   };
 
   const handleEditCourse = (course) => {
     setSelectedCourse(course);
+    setSelectedTags(course.tags.map(tag => tag.id));
     setModalType('editCourse');
     setShowModal(true);
   };
@@ -121,10 +189,13 @@ const CourseManagement = () => {
     }
   };
 
-  const handleEnrollUser = async (courseId, userId) => {
+  const handleEnrollUser = async (courseId) => {
     try {
-      await enrollUserInCourse(courseId, userId);
-      handleViewEnrolledUsers(courseId);
+      const userId = prompt("Entrez l'ID de l'utilisateur à inscrire:");
+      if (userId) {
+        await enrollUserInCourse(courseId, userId);
+        handleViewEnrolledUsers(courseId);
+      }
     } catch (err) {
       setError('Failed to enroll user');
     }
@@ -143,10 +214,16 @@ const CourseManagement = () => {
     try {
       switch (modalType) {
         case 'addCourse':
-          await createCourse(selectedCourse);
+          await createCourse({
+            ...selectedCourse,
+            tags: selectedTags
+          });
           break;
         case 'editCourse':
-          await updateCourse(selectedCourse.id, selectedCourse);
+          await updateCourse(selectedCourse.id, {
+            ...selectedCourse,
+            tags: selectedTags
+          });
           break;
         case 'deleteCourse':
           await deleteCourse(selectedCourse.id);
@@ -457,6 +534,38 @@ const CourseManagement = () => {
                   placeholder="Prix du cours"
                   className="mb-2 w-full p-2 border rounded"
                 />
+                <select
+                  value={selectedCourse.category_id}
+                  onChange={(e) => setSelectedCourse({ ...selectedCourse, category_id: e.target.value })}
+                  className="mb-2 w-full p-2 border rounded"
+                >
+                  <option value="">Sélectionnez une catégorie</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>{category.name}</option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  value={selectedCourse.duration}
+                  onChange={(e) => setSelectedCourse({ ...selectedCourse, duration: parseInt(e.target.value) })}
+                  placeholder="Durée du cours (en heures)"
+                  className="mb-2 w-full p-2 border rounded"
+                />
+                <div className="mb-2">
+                  <p className="font-semibold mb-1">Tags:</p>
+                  <div className="flex flex-wrap">
+                    {tags.map((tag) => (
+                      <button
+                        key={tag.id}
+                        onClick={() => handleTagSelection(tag.id)}
+                        className={`mr-2 mb-2 px-2 py-1 rounded ${selectedTags.includes(tag.id) ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                          }`}
+                      >
+                        {tag.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div className="flex justify-end mt-4">
                   <button onClick={() => setShowModal(false)} className="mr-2 px-4 py-2 bg-gray-200 rounded">
                     Annuler
@@ -503,6 +612,12 @@ const CourseManagement = () => {
                 ) : (
                   <p>Aucun utilisateur inscrit à ce cours.</p>
                 )}
+                <button
+                  onClick={() => handleEnrollUser(selectedCourse.id)}
+                  className="mb-4 bg-green-500 text-white px-4 py-2 rounded"
+                >
+                  Inscrire un utilisateur
+                </button>
                 <div className="flex justify-end mt-4">
                   <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-gray-200 rounded">
                     Fermer
