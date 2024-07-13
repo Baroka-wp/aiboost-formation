@@ -7,12 +7,12 @@ import {
   updateCourse,
   createCategory,
   createTag,
-  getCourseById,
   createChapter,
   updateChapter,
   deleteChapter
 } from '../services/api';
-import { Plus } from 'lucide-react';
+
+import { Fan, Plus } from 'lucide-react';
 import CourseList from './CourseList';
 import CourseFiltersAndCreation from './CourseFiltersAndCreation';
 import CourseModalForm from './CourseModalForm';
@@ -148,17 +148,12 @@ const CourseManagement = () => {
     }
   };
 
-  const handleAddChapter = async () => {
+  const handleAddChapter = async (newChapterData) => {
     if (!selectedCourseForChapters) return;
 
-    const newChapterData = {
-      title: "Nouveau chapitre",
-      content: "Contenu du nouveau chapitre"
-    };
-
     try {
-      const newChapter = await createChapter(selectedCourseForChapters.id, newChapterData);
-      setChapters(newChapter.data);
+      const result = await createChapter(selectedCourseForChapters.id, newChapterData);
+      setChapters(result.data);
     } catch (error) {
       console.error("Failed to add new chapter:", error);
     }
@@ -168,8 +163,9 @@ const CourseManagement = () => {
     if (!selectedCourseForChapters) return;
 
     try {
-      const result = await updateChapter(selectedCourseForChapters.id, updatedChapter.id, updatedChapter);
-      setChapters(chapters.map(ch => ch.id === updatedChapter.id ? result : ch));
+      await updateChapter(selectedCourseForChapters.id, updatedChapter.id, updatedChapter);
+
+      setChapters(chapters.map(ch => ch.id === updatedChapter.id ? updatedChapter : ch));
     } catch (error) {
       console.error("Failed to update chapter:", error);
     }
@@ -187,6 +183,7 @@ const CourseManagement = () => {
   };
 
   const handleCloseChapterModal = () => {
+    fetchData()
     setIsChapterModalOpen(false);
     setSelectedCourseForChapters(null);
   };

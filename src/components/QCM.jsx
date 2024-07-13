@@ -5,7 +5,7 @@ const QCM = ({ title, questions, onComplete }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isClose, setIsClose] = useState(true);
   const [score, setScore] = useState(0);
 
   const handleAnswer = (questionIndex, selectedOption) => {
@@ -39,7 +39,7 @@ const QCM = ({ title, questions, onComplete }) => {
   };
 
   const toggleOpen = () => {
-    setIsOpen(!isOpen);
+    setIsClose(!isClose);
   };
 
   return (
@@ -49,9 +49,9 @@ const QCM = ({ title, questions, onComplete }) => {
         className="w-full p-4 flex justify-between items-center text-xl font-bold text-orange-800 hover:bg-orange-100 transition-colors"
       >
         <span className="truncate">{title}</span>
-        {isOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+        {isClose ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
       </button>
-      {isOpen && (
+      {isClose && (
         <div className="p-4 md:p-6">
           {!isSubmitted ? (
             <>
