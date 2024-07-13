@@ -9,7 +9,8 @@ import {
   createTag,
   createChapter,
   updateChapter,
-  deleteChapter
+  deleteChapter,
+  getEnrolledUsers
 } from '../services/api';
 
 import { Fan, Plus } from 'lucide-react';
@@ -17,6 +18,7 @@ import CourseList from './CourseList';
 import CourseFiltersAndCreation from './CourseFiltersAndCreation';
 import CourseModalForm from './CourseModalForm';
 import ChapterSideModal from './ChapterSideModal';
+import StudentListModal from './StudentListModal'; // Importez le nouveau composant
 import Loading from './Loading';
 
 const CourseManagement = () => {
@@ -35,6 +37,9 @@ const CourseManagement = () => {
   const [isChapterModalOpen, setIsChapterModalOpen] = useState(false);
   const [selectedCourseForChapters, setSelectedCourseForChapters] = useState(null);
   const [chapters, setChapters] = useState([]);
+  const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
+  const [selectedCourseForStudents, setSelectedCourseForStudents] = useState(null);
+  const [enrolledStudents, setEnrolledStudents] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -188,11 +193,21 @@ const CourseManagement = () => {
     setSelectedCourseForChapters(null);
   };
 
+  const handleViewStudents = async (course) => {
+    setSelectedCourseForStudents(course);
+    try {
+      const response = await getEnrolledUsers(course.id);
+      setEnrolledStudents(response.data);
+      setIsStudentModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch enrolled students:", error);
+      setEnrolledStudents([]);
+    }
+  };
 
-
-  const handleViewStudents = (course) => {
-    console.log("View students for course:", course.id);
-    // Implement student viewing logic here
+  const handleCloseStudentModal = () => {
+    setIsStudentModalOpen(false);
+    setSelectedCourseForStudents(null);
   };
 
   if (isLoading) return <Loading />;
@@ -250,6 +265,13 @@ const CourseManagement = () => {
         onAddChapter={handleAddChapter}
         onEditChapter={handleEditChapter}
         onDeleteChapter={handleDeleteChapter}
+      />
+
+      <StudentListModal
+        isOpen={isStudentModalOpen}
+        onClose={handleCloseStudentModal}
+        students={enrolledStudents}
+        courseName={selectedCourseForStudents?.title || ''}
       />
     </div>
   );
