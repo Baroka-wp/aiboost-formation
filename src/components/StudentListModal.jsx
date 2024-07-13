@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, UserMinus } from 'lucide-react';
 
-const StudentListModal = ({ isOpen, onClose, students, courseName }) => {
+const StudentListModal = ({ isOpen, onClose, students, courseName, onUnenroll }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -20,7 +21,7 @@ const StudentListModal = ({ isOpen, onClose, students, courseName }) => {
           >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-orange-800">
-                Étudiants : {courseName}
+                Étudiants inscrits - {courseName}
               </h2>
               <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
                 <X size={24} />
@@ -32,18 +33,22 @@ const StudentListModal = ({ isOpen, onClose, students, courseName }) => {
               <ul className="divide-y divide-gray-200">
                 {students.map((student) => (
                   <li key={student.id} className="py-4">
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
+                        <p className="text-sm font-medium text-gray-900 truncate">
                           {student.full_name}
                         </p>
                         <p className="text-sm text-gray-500 truncate">
                           {student.email}
                         </p>
                       </div>
-                      <div className="inline-flex items-center text-base font-semibold text-gray-900">
-                        {/* Vous pouvez ajouter ici des informations supplémentaires si nécessaire */}
-                      </div>
+                      <button
+                        onClick={() => onUnenroll(student.id)}
+                        className="ml-4 bg-red-100 text-red-600 hover:bg-red-200 p-2 rounded-full transition-colors"
+                        title="Désinscrire l'étudiant"
+                      >
+                        <UserMinus size={20} />
+                      </button>
                     </div>
                   </li>
                 ))}

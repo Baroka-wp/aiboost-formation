@@ -10,7 +10,8 @@ import {
   createChapter,
   updateChapter,
   deleteChapter,
-  getEnrolledUsers
+  getEnrolledUsers,
+  unenrollUserFromCourse
 } from '../services/api';
 
 import { Fan, Plus } from 'lucide-react';
@@ -205,6 +206,19 @@ const CourseManagement = () => {
     }
   };
 
+  const handleUnenrollStudent = async (studentId) => {
+    if (!selectedCourseForStudents) return;
+
+    try {
+      await unenrollUserFromCourse(selectedCourseForStudents.id, studentId);
+      setEnrolledStudents(prevStudents =>
+        prevStudents.filter(student => student.id !== studentId)
+      );
+    } catch (error) {
+      console.error("Failed to unenroll student:", error);
+    }
+  };
+
   const handleCloseStudentModal = () => {
     setIsStudentModalOpen(false);
     setSelectedCourseForStudents(null);
@@ -267,11 +281,12 @@ const CourseManagement = () => {
         onDeleteChapter={handleDeleteChapter}
       />
 
-      <StudentListModal
+       <StudentListModal
         isOpen={isStudentModalOpen}
         onClose={handleCloseStudentModal}
         students={enrolledStudents}
         courseName={selectedCourseForStudents?.title || ''}
+        onUnenroll={handleUnenrollStudent}
       />
     </div>
   );

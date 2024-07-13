@@ -60,7 +60,7 @@ export const createCourse = (courseData) => api.post('/courses', courseData);
 export const updateCourse = (courseId, courseData) => api.put(`/courses/${courseId}`, courseData);
 export const deleteCourse = (courseId) => api.delete(`/courses/${courseId}`);
 export const getEnrolledUsers = (courseId) => api.get(`/courses/${courseId}/enrolled-users`);
-export const unenrollUserFromCourse = (courseId, userId) => api.delete(`/courses/${courseId}/enrolled-users/${userId}`);
+export const unenrollUserFromCourse = (courseId, userId) => api.delete(`/courses/${courseId}/enrolled_users/${userId}`);
 export const createChapter = (courseId, chapterData) => api.post(`/courses/${courseId}/chapters`, chapterData);
 export const updateChapter = (courseId, chapterId, chapterData) => api.put(`/courses/${courseId}/chapters/${chapterId}`, chapterData);
 export const deleteChapter = (courseId, chapterId) => api.delete(`/courses/${courseId}/chapters/${chapterId}`);
