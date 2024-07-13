@@ -141,8 +141,6 @@ const CourseManagement = () => {
   const handleViewChapters = async (course) => {
     setSelectedCourseForChapters(course);
     try {
-      // const courseData = await getCourseById(course.id);
-      // console.log(courseData.data.chapters)
       setChapters(course.chapters || []);
       setIsChapterModalOpen(true);
     } catch (error) {
@@ -160,7 +158,7 @@ const CourseManagement = () => {
 
     try {
       const newChapter = await createChapter(selectedCourseForChapters.id, newChapterData);
-      setChapters([...chapters, newChapter]);
+      setChapters(newChapter.data);
     } catch (error) {
       console.error("Failed to add new chapter:", error);
     }
