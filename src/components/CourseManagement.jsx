@@ -7,11 +7,16 @@ import {
   updateCourse,
   createCategory,
   createTag,
+  getCourseById,
+  createChapter,
+  updateChapter,
+  deleteChapter
 } from '../services/api';
 import { Plus } from 'lucide-react';
 import CourseList from './CourseList';
 import CourseFiltersAndCreation from './CourseFiltersAndCreation';
 import CourseModalForm from './CourseModalForm';
+import ChapterSideModal from './ChapterSideModal';
 import Loading from './Loading';
 
 const CourseManagement = () => {
@@ -27,6 +32,9 @@ const CourseManagement = () => {
   const [newTag, setNewTag] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalCourse, setModalCourse] = useState(null);
+  const [isChapterModalOpen, setIsChapterModalOpen] = useState(false);
+  const [selectedCourseForChapters, setSelectedCourseForChapters] = useState(null);
+  const [chapters, setChapters] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -119,7 +127,7 @@ const CourseManagement = () => {
       fetchData();
     } catch (error) {
       console.error('Failed to save course:', error);
-    }finally{
+    } finally {
       setIsModalOpen(false);
       setIsLoading(false)
     }
@@ -130,10 +138,62 @@ const CourseManagement = () => {
     setModalCourse(null);
   };
 
-  const handleViewChapters = (course) => {
-    console.log("View chapters for course:", course.id);
-    // Implement chapter viewing logic here
+  const handleViewChapters = async (course) => {
+    setSelectedCourseForChapters(course);
+    try {
+      // const courseData = await getCourseById(course.id);
+      // console.log(courseData.data.chapters)
+      setChapters(course.chapters || []);
+      setIsChapterModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch course details:", error);
+    }
   };
+
+  const handleAddChapter = async () => {
+    if (!selectedCourseForChapters) return;
+
+    const newChapterData = {
+      title: "Nouveau chapitre",
+      content: "Contenu du nouveau chapitre"
+    };
+
+    try {
+      const newChapter = await createChapter(selectedCourseForChapters.id, newChapterData);
+      setChapters([...chapters, newChapter]);
+    } catch (error) {
+      console.error("Failed to add new chapter:", error);
+    }
+  };
+
+  const handleEditChapter = async (updatedChapter) => {
+    if (!selectedCourseForChapters) return;
+
+    try {
+      const result = await updateChapter(selectedCourseForChapters.id, updatedChapter.id, updatedChapter);
+      setChapters(chapters.map(ch => ch.id === updatedChapter.id ? result : ch));
+    } catch (error) {
+      console.error("Failed to update chapter:", error);
+    }
+  };
+
+  const handleDeleteChapter = async (chapterId) => {
+    if (!selectedCourseForChapters) return;
+
+    try {
+      await deleteChapter(selectedCourseForChapters.id, chapterId);
+      setChapters(chapters.filter(chapter => chapter.id !== chapterId));
+    } catch (error) {
+      console.error("Failed to delete chapter:", error);
+    }
+  };
+
+  const handleCloseChapterModal = () => {
+    setIsChapterModalOpen(false);
+    setSelectedCourseForChapters(null);
+  };
+
+
 
   const handleViewStudents = (course) => {
     console.log("View students for course:", course.id);
@@ -185,6 +245,16 @@ const CourseManagement = () => {
         onSubmit={handleSubmitCourse}
         categories={categories}
         tags={tags}
+      />
+
+      <ChapterSideModal
+        isOpen={isChapterModalOpen}
+        onClose={handleCloseChapterModal}
+        course={selectedCourseForChapters}
+        chapters={chapters}
+        onAddChapter={handleAddChapter}
+        onEditChapter={handleEditChapter}
+        onDeleteChapter={handleDeleteChapter}
       />
     </div>
   );
