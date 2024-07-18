@@ -1,9 +1,18 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, UserMinus } from 'lucide-react';
+import { X, UserMinus, UserPlus } from 'lucide-react';
 
-const StudentListModal = ({ isOpen, onClose, students, courseName, onUnenroll }) => {
+const StudentListModal = ({ isOpen, onClose, students, courseName, onUnenroll, onEnroll }) => {
+  const [email, setEmail] = useState('');
+  const [showEnrollForm, setShowEnrollForm] = useState(false);
+
+  const handleEnroll = (e) => {
+    e.preventDefault();
+    onEnroll(email);
+    setEmail('');
+    setShowEnrollForm(false);
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -27,6 +36,41 @@ const StudentListModal = ({ isOpen, onClose, students, courseName, onUnenroll })
                 <X size={24} />
               </button>
             </div>
+            {!showEnrollForm ? (
+              <button
+                onClick={() => setShowEnrollForm(true)}
+                className="mb-4 bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 flex items-center"
+              >
+                <UserPlus size={20} className="mr-2" />
+                Inscrire un étudiant
+              </button>
+            ) : (
+              <form onSubmit={handleEnroll} className="mb-4">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email de l'étudiant"
+                  className="w-full p-2 border border-gray-300 rounded-md mb-2"
+                  required
+                />
+                <div className="flex justify-end space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowEnrollForm(false)}
+                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                  >
+                    Inscrire
+                  </button>
+                </div>
+              </form>
+            )}
             {students.length === 0 ? (
               <p className="text-gray-500">Aucun étudiant inscrit à ce cours.</p>
             ) : (

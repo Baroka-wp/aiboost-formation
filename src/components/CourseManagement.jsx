@@ -11,7 +11,8 @@ import {
   updateChapter,
   deleteChapter,
   getEnrolledUsers,
-  unenrollUserFromCourse
+  unenrollUserFromCourse,
+  enrollUserInCourse
 } from '../services/api';
 
 import { Fan, Plus } from 'lucide-react';
@@ -19,7 +20,7 @@ import CourseList from './CourseList';
 import CourseFiltersAndCreation from './CourseFiltersAndCreation';
 import CourseModalForm from './CourseModalForm';
 import ChapterSideModal from './ChapterSideModal';
-import StudentListModal from './StudentListModal'; // Importez le nouveau composant
+import StudentListModal from './StudentListModal';
 import Loading from './Loading';
 
 const CourseManagement = () => {
@@ -206,6 +207,17 @@ const CourseManagement = () => {
     }
   };
 
+  const handleEnrollStudent = async (email) => {
+    if (!selectedCourseForStudents) return;
+
+    try {
+      const response = await enrollUserInCourse(selectedCourseForStudents.id, email);
+      setEnrolledStudents(response.data);
+    } catch (error) {
+      console.error("Failed to enroll student:", error);
+    }
+  };
+
   const handleUnenrollStudent = async (studentId) => {
     if (!selectedCourseForStudents) return;
 
@@ -222,6 +234,7 @@ const CourseManagement = () => {
   const handleCloseStudentModal = () => {
     setIsStudentModalOpen(false);
     setSelectedCourseForStudents(null);
+    fetchData()
   };
 
   if (isLoading) return <Loading />;
@@ -281,12 +294,14 @@ const CourseManagement = () => {
         onDeleteChapter={handleDeleteChapter}
       />
 
-       <StudentListModal
+
+      <StudentListModal
         isOpen={isStudentModalOpen}
         onClose={handleCloseStudentModal}
         students={enrolledStudents}
         courseName={selectedCourseForStudents?.title || ''}
         onUnenroll={handleUnenrollStudent}
+        onEnroll={handleEnrollStudent}
       />
     </div>
   );

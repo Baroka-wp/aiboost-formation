@@ -68,7 +68,7 @@ export const getAllCategories = () => api.get('/courses/categories');
 export const createCategory = (name) => api.post('/courses/categories', { name });
 export const getAllTags = () => api.get('/courses/tags');
 export const createTag = (name) => api.post('/courses/tags', { name });
-export const enrollUserInCourse = (courseId, userId) => api.post(`/courses/${courseId}/enroll`, { userId });
+export const enrollUserInCourse = (courseId, email) => api.post(`/courses/enroll/${courseId}`, { email });
 export const searchCourses = (query, category, tags) => api.get('/courses/search', { params: { query, category, tags } });
 
 export default api;
