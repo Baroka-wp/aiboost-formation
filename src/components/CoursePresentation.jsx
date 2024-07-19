@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { getCourseById, getEnrolledCourses } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import InscriptionFormModal from './InscriptionFormModal';
@@ -17,6 +17,17 @@ const CoursePresentation = () => {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  console.log({user})
+
+  useEffect(() => {
+    // Vérifier si l'utilisateur vient de se connecter et doit payer
+    const queryParams = new URLSearchParams(location.search);
+    if (queryParams.get('action') === 'enroll' && isAuthenticated) {
+      setShowModal(true);
+    }
+  }, [location, isAuthenticated]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,10 +54,12 @@ const CoursePresentation = () => {
 
   const handleCourseAction = () => {
     if (!isAuthenticated) {
-      setShowModal(true);
+      // Rediriger vers la page de connexion avec un paramètre de retour
+      navigate(`/register?redirect=/course/${courseId}&action=enroll`);
     } else if (isEnrolled) {
       navigate(`/course/${courseId}/chapter/${course.chapters[0].id}`);
     } else {
+      // Ouvrir directement le modal de paiement
       setShowModal(true);
     }
   };

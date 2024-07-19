@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { login as apiLogin} from '../services/api.js';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { login as apiLogin } from '../services/api.js';
 import { User, Lock, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -10,7 +10,11 @@ const Login = () => {
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login: authLogin, checkAuth } = useAuth();
+  const searchParams = new URLSearchParams(location.search);
+  const redirectUrl = searchParams.get('redirect');
+  const action = searchParams.get('action');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,7 +23,11 @@ const Login = () => {
       const response = await apiLogin(email, password);
       authLogin(response.token, response.user);
       checkAuth();
-      if (response.user.role === 'mentor') {
+
+      // Récupérer les paramètres de redirection
+      if (redirectUrl) {
+        navigate(`${redirectUrl}?action=${action}`);
+      } else if (response.user.role === 'mentor') {
         navigate('/mentor');
       } else if (response.user.role === 'admin') {
         navigate('/admin');
@@ -129,10 +137,21 @@ const Login = () => {
                 type="submit"
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200"
               >
-                Se connecter
+                SE CONNECTER
               </button>
             </div>
           </form>
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">
+              Vous n'avez pas de compte ?{' '}
+              <Link
+                to={`/register${location.search}`}
+                className="font-medium text-orange-600 hover:text-orange-500"
+              >
+                Inscrivez-vous ici
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

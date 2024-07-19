@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { User, Mail, Lock, ArrowLeft } from 'lucide-react';
 import { register } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -15,6 +15,10 @@ const RegistrationPage = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const redirectUrl = queryParams.get('redirect');
+  const action = queryParams.get('action');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,11 +36,22 @@ const RegistrationPage = () => {
     try {
       const response = await register(formData.email, formData.password, formData.username, formData.full_name);
       login(response.data.token, response.data.user);
-      navigate('/profile');
+
+      // Récupérer les paramètres de redirection
+      const searchParams = new URLSearchParams(location.search);
+      const redirectUrl = searchParams.get('redirect');
+      const action = searchParams.get('action');
+
+      if (redirectUrl) {
+        navigate(`${redirectUrl}?action=${action}`);
+      } else {
+        navigate('/profile');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Une erreur est survenue lors de l\'inscription.');
     }
   };
+
 
   return (
     <div className="min-h-screen flex bg-orange-50">
@@ -175,8 +190,11 @@ const RegistrationPage = () => {
           <div className="text-center">
             <p className="mt-2 text-sm text-gray-600">
               Déjà un compte ?{' '}
-              <Link to="/login" className="font-medium text-orange-600 hover:text-orange-500">
-                Connectez-vous
+              <Link
+                to={`/login${location.search}`}
+                className="font-medium text-orange-600 hover:text-orange-500"
+              >
+                connectez-vous
               </Link>
             </p>
           </div>

@@ -36,7 +36,7 @@ export const updateUserProfile = (data, userId) => api.put(`/auth/users/${userId
 export const getEnrolledCourses = (userId) => api.get('/courses/enrolled', { userId });
 export const getAllCourses = () => api.get('/courses');
 export const getCourseById = (courseId) => api.get(`/courses/${courseId}`);
-export const enrollCourse = (courseId) => api.post(`/courses/enroll/${courseId}`);
+export const enrollCourse = (courseId, email) => api.post(`/courses/enroll/${courseId}`, {email});
 export const getUserProgress = (courseId) => api.get(`/courses/${courseId}/progress`);
 export const updateUserProgress = (courseId, chapterId) => api.post(`/courses/${courseId}/progress`, { chapterId });
 export const validateChapter = (courseId, chapterId, score, studentId) => api.post(`/courses/${courseId}/validate-chapter`, { chapterId, score, studentId });
