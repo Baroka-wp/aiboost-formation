@@ -36,7 +36,7 @@ export const updateUserProfile = (data, userId) => api.put(`/auth/users/${userId
 export const getEnrolledCourses = (userId) => api.get('/courses/enrolled', { userId });
 export const getAllCourses = () => api.get('/courses');
 export const getCourseById = (courseId) => api.get(`/courses/${courseId}`);
-export const enrollCourse = (courseId, email) => api.post(`/courses/enroll/${courseId}`, {email});
+export const enrollCourse = (courseId, email) => api.post(`/courses/enroll/${courseId}`, { email });
 export const getUserProgress = (courseId) => api.get(`/courses/${courseId}/progress`);
 export const updateUserProgress = (courseId, chapterId) => api.post(`/courses/${courseId}/progress`, { chapterId });
 export const validateChapter = (courseId, chapterId, score, studentId) => api.post(`/courses/${courseId}/validate-chapter`, { chapterId, score, studentId });
@@ -56,8 +56,43 @@ export const suspendUser = (userId, isSuspended) => api.put(`/admin/users/${user
 export const getCurrentUserProgress = (userId) => api.get(`/admin/users/${userId}/progress`);
 export const getMentors = (page = 1, limit = 10) => api.get(`/admin/mentors?page=${page}&limit=${limit}`);
 export const getStudents = (page = 1, limit = 10) => api.get(`/admin/students?page=${page}&limit=${limit}`);
-export const createCourse = (courseData) => api.post('/courses', courseData);
-export const updateCourse = (courseId, courseData) => api.put(`/courses/${courseId}`, courseData);
+// export const createCourse = (courseData) => api.post('/courses', courseData);
+// export const updateCourse = (courseId, courseData) => api.put(`/courses/${courseId}`, courseData);
+export const createCourse = (courseData) => {
+  const formData = new FormData();
+  for (const key in courseData) {
+    if (key === 'tags') {
+      formData.append(key, JSON.stringify(courseData[key]));
+    } else if (key === 'coverImage' && courseData[key] instanceof File) {
+      formData.append(key, courseData[key], courseData[key].name);
+    } else {
+      formData.append(key, courseData[key]);
+    }
+  }
+  return api.post('/courses', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+};
+
+export const updateCourse = (courseId, courseData) => {
+  const formData = new FormData();
+  for (const key in courseData) {
+    if (key === 'tags') {
+      formData.append(key, JSON.stringify(courseData[key]));
+    } else if (key === 'coverImage' && courseData[key] instanceof File) {
+      formData.append(key, courseData[key], courseData[key].name);
+    } else {
+      formData.append(key, courseData[key]);
+    }
+  }
+  return api.put(`/courses/${courseId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+};
 export const deleteCourse = (courseId) => api.delete(`/courses/${courseId}`);
 export const getEnrolledUsers = (courseId) => api.get(`/courses/${courseId}/enrolled-users`);
 export const unenrollUserFromCourse = (courseId, userId) => api.delete(`/courses/${courseId}/enrolled_users/${userId}`);

@@ -124,6 +124,7 @@ const CourseManagement = () => {
 
   const handleSubmitCourse = async (courseData) => {
     setIsLoading(true)
+    console.log({courseData})
     try {
       if (modalCourse) {
         await updateCourse(modalCourse.id, courseData);

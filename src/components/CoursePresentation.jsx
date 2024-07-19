@@ -4,7 +4,7 @@ import { getCourseById, getEnrolledCourses } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import InscriptionFormModal from './InscriptionFormModal';
 import Loading from './Loading';
-import { Book, Clock, Users, ChevronRight, Home, User, Twitter, Facebook, Linkedin } from 'lucide-react';
+import { Book, Clock, Users, ChevronRight, Home, User, Twitter, Facebook, Linkedin, Wallet } from 'lucide-react';
 import Header from './Header';
 
 
@@ -18,8 +18,6 @@ const CoursePresentation = () => {
   const [showModal, setShowModal] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const location = useLocation();
-
-  console.log({user})
 
   useEffect(() => {
     // Vérifier si l'utilisateur vient de se connecter et doit payer
@@ -124,6 +122,11 @@ const CoursePresentation = () => {
               <Users className="mr-2" size={20} />
               <span>{course?.enrolled_count || 0} étudiants inscrits</span>
             </div>
+
+            <div className="flex items-center">
+              <Wallet className="mr-2" size={20} />
+              <span>{course?.price || 0} FCFA (+ les frais environ 1,5%) </span>
+            </div>
           </div>
           <div className="flex flex-wrap gap-4 items-center">
             <button
@@ -191,6 +194,7 @@ const CoursePresentation = () => {
           isOpen={showModal}
           onClose={() => setShowModal(false)}
           courseTitle={course.title}
+          coursePrice={course.price}
           courseId={course.id}
           onSuccess={handleEnrollmentSuccess}
           isAuthenticated={isAuthenticated}

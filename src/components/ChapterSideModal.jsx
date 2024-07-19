@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Edit, Trash2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { X, Plus, Edit, Trash2, ArrowLeft, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import YouTube from 'react-youtube';
 import ReactPlayer from 'react-player';

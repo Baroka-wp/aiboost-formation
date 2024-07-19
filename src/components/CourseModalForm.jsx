@@ -6,41 +6,54 @@ const CourseModalForm = ({ isOpen, isLoading, onClose, course, onSubmit, categor
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    price: '',
     category_id: '',
-    tags: [],
     duration: '',
-    price: ''
+    tags: [],
+    coverImage: null
   });
 
+  const [previewImage, setPreviewImage] = useState(null);
+
+
   useEffect(() => {
-    if (isOpen) {
-      if (course) {
-        // Editing an existing course
-        setFormData({
-          title: course.title || '',
-          description: course.description || '',
-          category_id: course.category_id || '',
-          tags: course.tags.map(tag => tag.id) || [],
-          duration: course.duration || '',
-          price: course.price || ''
-        });
-      } else {
-        // Adding a new course
-        setFormData({
-          title: '',
-          description: '',
-          category_id: '',
-          tags: [],
-          duration: '',
-          price: ''
-        });
-      }
+    if (course) {
+      setFormData({
+        title: course.title || '',
+        description: course.description || '',
+        price: course.price || '',
+        category_id: course.category_id || '',
+        duration: course.duration || '',
+        tags: course.tags ? course.tags.map(tag => tag.id) : [],
+        coverImage: null
+      });
+      setPreviewImage(course.cover_image_url);
+    } else {
+      setFormData({
+        title: '',
+        description: '',
+        price: '',
+        category_id: '',
+        duration: '',
+        tags: [],
+        coverImage: null
+      });
+      setPreviewImage(null);
     }
-  }, [isOpen, course]);
+  }, [course]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      console.log({ file })
+      setFormData(prev => ({ ...prev, coverImage: file }));
+      setPreviewImage(URL.createObjectURL(file));
+    }
   };
 
   const handleTagToggle = (tagId) => {
@@ -52,10 +65,10 @@ const CourseModalForm = ({ isOpen, isLoading, onClose, course, onSubmit, categor
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
+ const handleSubmit = (e) => {
+  e.preventDefault();
+  onSubmit(formData);
+};
 
   return (
     <AnimatePresence>
@@ -82,6 +95,18 @@ const CourseModalForm = ({ isOpen, isLoading, onClose, course, onSubmit, categor
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Image de couverture</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="mt-1 block w-full"
+                />
+                {previewImage && (
+                  <img src={previewImage} alt="Preview" className="mt-2 h-32 w-auto object-cover" />
+                )}
+              </div>
               <div>
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
                   Titre du cours
@@ -165,7 +190,7 @@ const CourseModalForm = ({ isOpen, isLoading, onClose, course, onSubmit, categor
                 </div>
                 <div className="flex-1">
                   <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-                    Prix (€)
+                    Prix (FCFA)
                   </label>
                   <input
                     type="number"

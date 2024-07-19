@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 
 const KKIA_PAY = import.meta.env.VITE_KKIA_PAY_KEY
 
-const InscriptionFormModal = ({ isOpen, onClose, courseTitle, courseId, onSuccess }) => {
+const InscriptionFormModal = ({ isOpen, onClose, courseTitle, coursePrice, courseId, onSuccess }) => {
   const { user, updateUserInfo } = useAuth();
   const [step, setStep] = useState(1); // 1 pour paiement, 2 pour succès
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ const InscriptionFormModal = ({ isOpen, onClose, courseTitle, courseId, onSucces
     try {
       // Proceed to payment
       openKkiapayWidget({
-        amount: "1",
+        amount: coursePrice,
         position: "center",
         callback: "",
         data: "",
