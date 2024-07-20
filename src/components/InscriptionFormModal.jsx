@@ -1,65 +1,57 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CreditCard, User, Check } from 'lucide-react';
-import { register, enrollCourse } from '../services/api';
+import { enrollCourse } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
+const KKIA_PAY = import.meta.env.VITE_KKIA_PAY_KEY
 
-const InscriptionFormModal = ({ isOpen, onClose, courseTitle, courseId, onSuccess, isAuthenticated }) => {
-  const [step, setStep] = useState(isAuthenticated ? 2 : 1);
-  const [formData, setFormData] = useState({
-    nom: '',
-    email: '',
-    password: '',
-    numeroCard: '',
-    dateExpiration: '',
-    cvv: ''
-  });
+const InscriptionFormModal = ({ isOpen, onClose, courseTitle, coursePrice, courseId, onSuccess }) => {
+  const { user, updateUserInfo } = useAuth();
+  const [step, setStep] = useState(1); // 1 pour paiement, 2 pour succès
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { login, user } = useAuth();
 
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      setFormData(prevData => ({
-        ...prevData,
-        nom: user.full_name || '',
-        email: user.email || ''
-      }));
-    }
-  }, [isAuthenticated, user]);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handlePayment = async () => {
     setLoading(true);
     setError(null);
- try {
-      if (!isAuthenticated) {
-        const response = await register(formData.email, formData.password, formData.nom, formData.nom);
-        await login(response.data.token, response.data.user);
-      }
-
-      // Inscrire l'utilisateur au cours
-      await enrollCourse(courseId);
-
-      setStep(3);
-      setTimeout(() => {
-        onClose();
-        navigate('/profile');
-      }, 2000);
-
+    try {
+      // Proceed to payment
+      openKkiapayWidget({
+        amount: coursePrice,
+        position: "center",
+        callback: "",
+        data: "",
+        theme: "orange",
+        key: KKIA_PAY
+      });
     } catch (error) {
-      console.error('Registration/Enrollment error:', error);
-      setError(error.response?.data?.message || 'Registration/Enrollment failed. Please try again.');
+      console.error('Payment error:', error);
+      setError('Payment failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
+  addSuccessListener(async (response) => {
+    console.log({ response })
+    try {
+      // Enroll the user in the course
+      await enrollCourse(courseId, user?.email);
+      // Update user information
+      const updatedEnrolledCourses = [...(user.enrolled_courses || []), parseInt(courseId)];
+      await updateUserInfo({ enrolled_courses: updatedEnrolledCourses });
+      setStep(2);
+      setTimeout(() => {
+        onClose();
+        onSuccess();
+      }, 2000);
+    } catch (error) {
+      console.error('Error during course enrollment:', error);
+      setError('Failed to enroll in the course. Please try again.');
+    }
+  });
 
   if (!isOpen) return null;
 
@@ -76,100 +68,23 @@ const InscriptionFormModal = ({ isOpen, onClose, courseTitle, courseId, onSucces
         {error && <div className="text-red-600 mb-4">{error}</div>}
 
         {step === 1 && (
-          <form onSubmit={(e) => { e.preventDefault(); setStep(2); }}>
-            <h3 className="text-xl font-semibold mb-4">Étape 1 : Identité</h3>
-            <div className="mb-4">
-              <label htmlFor="nom" className="block mb-2">Nom complet</label>
-              <input
-                type="text"
-                id="nom"
-                name="nom"
-                value={formData.nom}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="email" className="block mb-2">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="password" className="block mb-2">Mot de passe</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <button type="submit" className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
-              Suivant
+          <div>
+            <p className="text-xl font-semibold mb-4">Veuillez procéder au paiement pour finir votre inscription au cours !</p>
+            <button
+              onClick={handlePayment}
+              className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+              disabled={loading}
+            >
+              {loading ? 'Traitement...' : 'PROCEDER AU PAIEMENT'}
             </button>
-          </form>
+          </div>
         )}
 
         {step === 2 && (
-          <form onSubmit={handleSubmit}>
-            <h3 className="text-xl font-semibold mb-4">Étape 2 : Paiement</h3>
-            <div className="mb-4">
-              <label htmlFor="numeroCard" className="block mb-2">Numéro de carte</label>
-              <input
-                type="text"
-                id="numeroCard"
-                name="numeroCard"
-                value={formData.numeroCard}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="dateExpiration" className="block mb-2">Date d'expiration</label>
-              <input
-                type="text"
-                id="dateExpiration"
-                name="dateExpiration"
-                value={formData.dateExpiration}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="cvv" className="block mb-2">CVV</label>
-              <input
-                type="text"
-                id="cvv"
-                name="cvv"
-                value={formData.cvv}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <button type="submit" className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600" disabled={loading}>
-              {loading ? 'Traitement...' : 'Payer et S\'inscrire'}
-            </button>
-          </form>
-        )}
-
-        {step === 3 && (
           <div className="text-center">
             <Check size={48} className="text-green-500 mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-4">Inscription réussie !</h3>
-            <p>Vous serez redirigé vers votre profil...</p>
+            <p>Vous serez redirigé vers votre cours...</p>
           </div>
         )}
       </div>

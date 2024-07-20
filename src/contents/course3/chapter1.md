@@ -1,6 +1,4 @@
-# Explorez comment l'IA peut amplifier votre processus créatif
-
-## Chapitre 1 : L'IA comme outil créatif
+# L'IA comme outil créatif
 
 ### Introduction
 
