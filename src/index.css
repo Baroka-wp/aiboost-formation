@@ -9,7 +9,6 @@
   overflow: hidden;
   max-width: 100%;
 }
-
 .video-container iframe,
 .video-container video {
   position: absolute;
