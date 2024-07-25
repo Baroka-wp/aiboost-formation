@@ -17,18 +17,30 @@ const InscriptionFormModal = ({ isOpen, onClose, courseTitle, coursePrice, cours
     setLoading(true);
     setError(null);
     try {
-      // Proceed to payment
-      openKkiapayWidget({
-        amount: coursePrice,
-        position: "center",
-        callback: "",
-        data: "",
-        theme: "orange",
-        key: KKIA_PAY
-      });
+      if (coursePrice === 0) {
+        // Si le cours est gratuit, procéder directement à l'inscription
+        await enrollCourse(courseId, user?.email);
+        const updatedEnrolledCourses = [...(user.enrolled_courses || []), parseInt(courseId)];
+        await updateUserInfo({ enrolled_courses: updatedEnrolledCourses });
+        setStep(2);
+        setTimeout(() => {
+          onClose();
+          onSuccess();
+        }, 2000);
+      } else {
+        // Proceed to payment for paid courses
+        openKkiapayWidget({
+          amount: coursePrice,
+          position: "center",
+          callback: "",
+          data: "",
+          theme: "orange",
+          key: KKIA_PAY
+        });
+      }
     } catch (error) {
-      console.error('Payment error:', error);
-      setError('Payment failed. Please try again.');
+      console.error('Payment/Enrollment error:', error);
+      setError('Payment/Enrollment failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -69,13 +81,17 @@ const InscriptionFormModal = ({ isOpen, onClose, courseTitle, coursePrice, cours
 
         {step === 1 && (
           <div>
-            <p className="text-xl font-semibold mb-4">Veuillez procéder au paiement pour finir votre inscription au cours !</p>
+            <p className="text-xl font-semibold mb-4">
+              {coursePrice > 0
+                ? "Veuillez procéder au paiement pour finir votre inscription au cours !"
+                : "Confirmez votre inscription à ce cours gratuit !"}
+            </p>
             <button
               onClick={handlePayment}
               className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
               disabled={loading}
             >
-              {loading ? 'Traitement...' : 'PROCEDER AU PAIEMENT'}
+              {loading ? 'Traitement...' : coursePrice > 0 ? 'PROCEDER AU PAIEMENT' : 'CONFIRMER L\'INSCRIPTION'}
             </button>
           </div>
         )}
