@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Book, User, GraduationCap, Award, Search, Clock, Briefcase, X } from 'lucide-react';
+import { Book, User, GraduationCap, Award, Search, Clock, Briefcase, X, Mail, Phone } from 'lucide-react';
 import { getAllCourses, getAllCategories, getAllTags } from './services/api';
 import Loading from './components/Loading';
 import Header from './components/Header';
@@ -184,6 +184,29 @@ const LandingPage = () => {
             </Link>
           </div>
         </section>
+        {/* Contact */}
+        <section id="contact" className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12">Contactez-nous</h2>
+            <div className="flex flex-col md:flex-row justify-center items-stretch space-y-4 md:space-y-0 md:space-x-8">
+              <ContactCard
+                icon={<Mail size={24} />}
+                title="Email"
+                content="birotori@gmail.com"
+                link="mailto:birotori@gmail.com"
+                buttonText="Envoyer un email"
+              />
+              <ContactCard
+                icon={<Phone size={24} />}
+                title="WhatsApp"
+                content="+22967153974"
+                link="https://wa.me/22967153974"
+                buttonText="Contacter sur WhatsApp"
+                isWhatsApp={true}
+              />
+            </div>
+          </div>
+        </section>
       </main>
 
       <footer className="bg-gray-800 text-white py-8">
@@ -224,7 +247,11 @@ const CourseCard = ({ course }) => (
     <div className="p-4 flex flex-col flex-grow">
       <p className="text-gray-600 mb-4 flex-grow line-clamp-3">{course.description}</p>
       <div className="flex justify-between items-center mt-auto">
-        <span className="text-orange-600 font-bold">{course.price} FCFA</span>
+        {course.price === 0 ? (
+          <span className="text-green-600 font-bold">Gratuit</span>
+        ) : (
+          <span className="text-orange-600 font-bold">{course.price} FCFA</span>
+        )}
         <div className="flex items-center">
           <Clock className="mr-1" size={16} />
           <span>{course.duration}h</span>
@@ -257,6 +284,25 @@ const FeatureCard = ({ icon, title, description }) => (
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p>{description}</p>
     </div>
+  </div>
+);
+
+const ContactCard = ({ icon, title, content, link, buttonText, isWhatsApp = false }) => (
+  <div className="bg-orange-100 p-6 rounded-lg text-center flex flex-col justify-between w-full md:w-64">
+    <div>
+      <div className="text-orange-600 mb-4">{icon}</div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="mb-4">{content}</p>
+    </div>
+    <a
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`w-full px-4 py-2 rounded-full text-white font-semibold ${isWhatsApp ? 'bg-green-500 hover:bg-green-600' : 'bg-orange-500 hover:bg-orange-600'
+        } transition-colors`}
+    >
+      {buttonText}
+    </a>
   </div>
 );
 
