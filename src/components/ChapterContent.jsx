@@ -30,6 +30,7 @@ const ChapterContent = () => {
   const [submissionStatus, setSubmissionStatus] = useState('not_submitted');
   const [mentorFeedback, setMentorFeedback] = useState('');
   const [submission, setSubmission] = useState({})
+  const [showCompleteButton, setShowCompleteButton] = useState(false);
   const { user, isAuthenticated } = useAuth();
 
   const fetchData = useCallback(async () => {
@@ -77,6 +78,30 @@ const ChapterContent = () => {
       setIsLoading(false)
     }
   }, [courseId, chapterId]);
+
+  useEffect(() => {
+    const checkChapterContent = () => {
+      const currentChapter = course?.chapters.find(ch => ch.id === parseInt(chapterId));
+      const hasQCM = currentChapter?.content.includes('```qcm');
+      const hasSubmission = currentChapter?.content.includes('```submission');
+      setShowCompleteButton(!hasQCM && !hasSubmission);
+    };
+
+    if (course) {
+      checkChapterContent();
+    }
+  }, [course, chapterId]);
+
+  const handleCompleteChapter = async () => {
+    try {
+      const updatedProgress = await updateUserProgress(courseId, chapterId, true);
+      setUserProgress(updatedProgress.data);
+      alert("Chapitre terminé avec succès !");
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du progrès :", error);
+      alert("Une erreur est survenue. Veuillez réessayer.");
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -253,6 +278,14 @@ const ChapterContent = () => {
                   {chapterContent}
                 </ReactMarkdown>
               </div>
+              {showCompleteButton && (
+                <button
+                  onClick={handleCompleteChapter}
+                  className="mt-6 bg-orange-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-colors"
+                >
+                  Terminer le chapitre
+                </button>
+              )}
             </div>
           </div>
         </main>
