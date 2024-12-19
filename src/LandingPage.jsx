@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Book, User, GraduationCap, Award, Search, Clock, Briefcase, X, Mail, Phone } from 'lucide-react';
+import { Book, User, GraduationCap, Award, Search, Clock, Briefcase, X, Mail, Phone, BookOpen, Users } from 'lucide-react';
 import { getAllCourses, getAllCategories, getAllTags } from './services/api';
 import Loading from './components/Loading';
 import Header from './components/Header';
+import bgImage from './assets/image_fx_.jpg'
+import why_us_image from './assets/why_us.jpg'
 
 const LandingPage = () => {
   const [courses, setCourses] = useState([]);
@@ -15,7 +17,7 @@ const LandingPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
-
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +53,15 @@ const LandingPage = () => {
     setFilteredCourses(results);
   }, [searchTerm, selectedCategory, selectedTags, courses]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleTagToggle = (tagId) => {
     setSelectedTags(prevTags =>
       prevTags.includes(tagId)
@@ -65,38 +76,177 @@ const LandingPage = () => {
   return (
     <div className="bg-orange-50 min-h-screen font-sans">
       <Header />
-      <main className="pt-16">
+      <main>
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-20">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Découvrez AIBoost</h1>
-            <p className="text-xl md:text-2xl mb-8">Votre Passerelle vers l'Excellence !</p>
-            <a href="#courses" className="bg-white text-orange-600 px-6 py-3 rounded-full text-lg font-semibold hover:bg-orange-100 transition-colors">
-              Commencer maintenant
-            </a>
+        <section className="relative h-screen flex items-center bg-gradient-to-r from-orange-600 to-red-600 text-white overflow-hidden pt-24">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[url('/hero-pattern.svg')] opacity-10"></div>
+          
+          {/* Background Image with Overlay */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-fixed"
+            style={{
+              backgroundImage: `url(${bgImage})`,
+              backgroundPosition: 'center 30%'
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-600/60 to-red-600/60"></div>
+          </div>
+
+          {/* Content */}
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-5xl md:text-7xl font-bold mb-6">
+                <span className="block mb-4">Formez-vous aux</span>
+                <span className="text-yellow-300">Métiers du Numérique</span>
+              </h1>
+              <p className="text-xl md:text-2xl mb-8 text-orange-100 max-w-2xl mx-auto leading-relaxed">
+                Découvrez AIBoost, votre partenaire pour une carrière réussie dans le numérique. 
+                De l'IA au développement web, en passant par la cybersécurité et le marketing digital, 
+                formez-vous aux métiers d'avenir les plus recherchés.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a 
+                  href="#courses" 
+                  className="px-8 py-4 bg-white text-orange-600 rounded-full text-lg font-semibold hover:bg-orange-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  Commencer maintenant
+                </a>
+                <a 
+                  href="#contact" 
+                  className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full text-lg font-semibold hover:bg-white/10 transition-all duration-300"
+                >
+                  Nous contacter
+                </a>
+              </div>
+              
+              {/* Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 text-center">
+                <div className="p-4 backdrop-blur-sm bg-white/10 rounded-xl">
+                  <div className="text-4xl font-bold text-yellow-300 mb-2">15+</div>
+                  <div className="text-sm text-orange-100">Domaines d'Expertise</div>
+                </div>
+                <div className="p-4 backdrop-blur-sm bg-white/10 rounded-xl">
+                  <div className="text-4xl font-bold text-yellow-300 mb-2">1000+</div>
+                  <div className="text-sm text-orange-100">Apprenants Satisfaits</div>
+                </div>
+                <div className="p-4 backdrop-blur-sm bg-white/10 rounded-xl">
+                  <div className="text-4xl font-bold text-yellow-300 mb-2">50+</div>
+                  <div className="text-sm text-orange-100">Experts & Mentors</div>
+                </div>
+                <div className="p-4 backdrop-blur-sm bg-white/10 rounded-xl">
+                  <div className="text-4xl font-bold text-yellow-300 mb-2">90%</div>
+                  <div className="text-sm text-orange-100">Taux d'Insertion</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Decorative Elements */}
+          <div className="absolute bottom-0 left-0 w-full overflow-hidden">
+            <svg
+              className="relative block w-full h-[50px] text-white"
+              viewBox="0 0 1200 120"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                className="fill-current"
+              ></path>
+            </svg>
           </div>
         </section>
 
         {/* Services Section */}
-        <section id="services" className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">Nos Services</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <ServiceCard
-                icon={<Book size={40} />}
-                title="Cours de Pointe"
-                description="Des cours constamment mis à jour sur l'IA et les technologies connexes."
-              />
-              <ServiceCard
-                icon={<User size={40} />}
-                title="Mentorat Personnalisé"
-                description="Bénéficiez de l'expertise de mentors chevronnés qui vous guideront."
-              />
-              <ServiceCard
-                icon={<GraduationCap size={40} />}
-                title="Apprentissage Interactif"
-                description="Testez vos connaissances avec des QCM et des projets pratiques."
-              />
+        <section className="relative py-32 bg-white overflow-hidden">
+          <div className="container relative mx-auto px-4">
+            <div className="flex flex-col lg:flex-row items-center gap-16">
+              {/* Left Column - Content */}
+              <div className="w-full lg:w-1/2 relative z-10">
+                <div className="max-w-xl">
+                  <h2 className="text-5xl font-bold mb-6 text-gray-900">
+                    Pourquoi Nous Choisir
+                  </h2>
+                  <div className="w-24 h-1 bg-orange-500 rounded-full mb-12"></div>
+
+                  {/* Cards Stack */}
+                  <div className="space-y-8">
+                    {/* Programme Complet */}
+                    <div className="group p-8 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-orange-500 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <div className="flex gap-6">
+                        <div className="flex-shrink-0">
+                          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
+                            <BookOpen className="w-6 h-6 text-white" />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-orange-600 transition-colors">
+                            Programme Complet
+                          </h3>
+                          <p className="text-gray-600 leading-relaxed">
+                            Accédez à une large gamme de cours conçus par des experts de l'industrie, adaptés aux besoins du marché.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Apprentissage Interactif */}
+                    <div className="group p-8 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-orange-500 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <div className="flex gap-6">
+                        <div className="flex-shrink-0">
+                          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
+                            <Users className="w-6 h-6 text-white" />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-orange-600 transition-colors">
+                            Apprentissage Interactif
+                          </h3>
+                          <p className="text-gray-600 leading-relaxed">
+                            Échangez avec les formateurs et vos pairs à travers des sessions en direct et des forums dédiés.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Certifications Reconnues */}
+                    <div className="group p-8 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-orange-500 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <div className="flex gap-6">
+                        <div className="flex-shrink-0">
+                          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
+                            <Award className="w-6 h-6 text-white" />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-orange-600 transition-colors">
+                            Certifications Reconnues
+                          </h3>
+                          <p className="text-gray-600 leading-relaxed">
+                            Obtenez des certificats à la fin de vos formations pour valoriser votre profil professionnel.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column - Image */}
+              <div className="w-full lg:w-1/2 lg:h-[800px] relative overflow-hidden">
+                <div 
+                  className="absolute inset-0 lg:-right-48 lg:w-[150%]"
+                  style={{
+                    transform: `translateY(${scrollY * 0.1}px)`,
+                  }}
+                >
+                  <img 
+                    src={why_us_image}
+                    alt="Illustration apprentissage" 
+                    className="w-full h-full object-cover rounded-2xl shadow-2xl"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/50 to-transparent"></div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
