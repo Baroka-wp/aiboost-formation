@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { User, Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -8,6 +8,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +23,15 @@ const Header = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleContactClick = (e) => {
+    e.preventDefault();
+    if (location.pathname !== '/') {
+      window.location.href = '/#contact';
+    } else {
+      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
@@ -61,22 +71,16 @@ const Header = () => {
             >
               Formations
             </Link>
-            <Link 
-              to="/about" 
-              className={`transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:transition-all after:duration-300 ${
-                isScrolled ? 'text-gray-800 after:bg-orange-600' : 'text-white after:bg-white'
-              }`}
-            >
-              À propos
-            </Link>
-            <Link 
-              to="/contact" 
+            
+            <a 
+              href="#contact"
+              onClick={handleContactClick}
               className={`transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:transition-all after:duration-300 ${
                 isScrolled ? 'text-gray-800 after:bg-orange-600' : 'text-white after:bg-white'
               }`}
             >
               Contact
-            </Link>
+            </a>
             {isAuthenticated ? (
               <>
                 <Link 
@@ -144,20 +148,16 @@ const Header = () => {
                 >
                   Formations
                 </Link>
-                <Link 
-                  to="/about" 
+                <a 
+                  href="#contact"
+                  onClick={(e) => {
+                    handleContactClick(e);
+                    setIsMenuOpen(false);
+                  }}
                   className="text-gray-800 hover:text-orange-600 transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  À propos
-                </Link>
-                <Link 
-                  to="/contact" 
-                  className="text-gray-800 hover:text-orange-600 transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
                 >
                   Contact
-                </Link>
+                </a>
                 {isAuthenticated ? (
                   <>
                     <Link 

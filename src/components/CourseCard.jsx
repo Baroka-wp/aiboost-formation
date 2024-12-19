@@ -1,53 +1,58 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Users, BookOpen } from 'lucide-react';
+import { Clock, Users, Tag } from 'lucide-react';
 
 const CourseCard = ({ course }) => {
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'XOF',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
   return (
-    <div className="bg-white rounded-xl p-6 transition-all duration-300 hover:shadow-lg border border-gray-100">
-      {/* Course Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 text-sm font-medium rounded-full mb-3">
-            {course.category}
-          </span>
-          <h3 className="text-lg font-bold text-gray-900 hover:text-orange-600 transition-colors">
-            {course.title}
-          </h3>
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform hover:scale-[1.02]">
+      <div className="p-6">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          {course.title}
+        </h3>
+        
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+          {course.description}
+        </p>
+
+        <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+          <div className="flex items-center gap-1">
+            <Clock size={16} />
+            <span>{course.duration}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Users size={16} />
+            <span>{course.enrolled_count || 0} inscrits</span>
+          </div>
         </div>
+
+        <div className="flex flex-wrap gap-2 mb-4">
+          {course.tags?.slice(0, 3).map((tag, index) => (
+            <span
+              key={tag.id || index}
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-medium"
+            >
+              <Tag size={12} />
+              {tag.name}
+            </span>
+          ))}
+        </div>
+
+        <Link
+          to={`/courses/${course.id}`}
+          className="block w-full text-center bg-orange-600 text-white py-2 rounded-xl hover:bg-orange-700 transition-colors"
+        >
+          Voir le cours
+        </Link>
       </div>
-
-      {/* Course Description */}
-      <p className="text-gray-600 text-sm line-clamp-2 mb-4">
-        {course.description}
-      </p>
-
-      {/* Course Meta */}
-      <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 mb-4">
-        <div className="flex items-center gap-1">
-          <Clock className="w-3.5 h-3.5" />
-          <span>{course.duration}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Users className="w-3.5 h-3.5" />
-          <span>{course.students} étudiants</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <BookOpen className="w-3.5 h-3.5" />
-          <span>{course.level}</span>
-        </div>
-      </div>
-
-      {/* Course Footer */}
-      <Link
-        to={`/courses/${course.id}`}
-        className="inline-flex items-center text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors"
-      >
-        En savoir plus
-        <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 12H20M20 12L14 6M20 12L14 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </Link>
     </div>
   );
 };
