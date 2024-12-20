@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { login as apiLogin } from '../services/api.js';
-import { User, Lock, ArrowLeft } from 'lucide-react';
+import { User, Lock, ArrowLeft, Home } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
@@ -42,6 +42,16 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex">
+      {/* Back to home button - Mobile & Tablet */}
+      <div className="fixed top-4 left-4 lg:hidden">
+        <Link
+          to="/"
+          className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg text-gray-600 hover:text-orange-600 hover:scale-105 transition-all duration-300"
+        >
+          <Home className="w-6 h-6" />
+        </Link>
+      </div>
+
       {/* Left column - Welcome message */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-orange-400 to-orange-600 p-12 flex-col justify-between">
         <Link to="/" className="text-white flex items-center hover:underline">
@@ -55,7 +65,7 @@ const Login = () => {
           </p>
         </div>
         <div className="text-white text-sm">
-          © 2024 AIBoost. Tous droits réservés.
+          2024 AIBoost. Tous droits réservés.
         </div>
       </div>
 
