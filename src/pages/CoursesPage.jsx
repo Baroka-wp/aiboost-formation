@@ -6,7 +6,7 @@ import Header from '../components/Header';
 import Loading from '../components/Loading';
 import ContactSection from '../components/ContactSection';
 import Footer from '../components/Footer';
-import heroImage from '../assets/our_course.jpg';
+import heroImage from '../assets/why_us.jpg';
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
