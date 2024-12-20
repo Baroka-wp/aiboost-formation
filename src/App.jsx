@@ -10,6 +10,7 @@ import RegistrationPage from './components/RegistrationPage';
 import Login from './components/Login';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Loading from './components/Loading';
+import CoursesPage from './pages/CoursesPage';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { isAuthenticated, loading, user } = useAuth();
@@ -53,6 +54,7 @@ function App() {
               <AdminDashboard />
             </ProtectedRoute>
           } />
+          <Route path="/courses" element={<CoursesPage />} />
         </Routes>
       </AuthProvider>
     </Router>
