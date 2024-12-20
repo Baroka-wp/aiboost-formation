@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Book, User, GraduationCap, Award, Search, Clock, Briefcase, X, Mail, Phone, BookOpen, Users, ArrowRight, Compass, MessageCircle } from 'lucide-react';
 import { getAllCourses, getAllCategories, getAllTags } from './services/api';
+import Footer from './components/Footer';
 import Loading from './components/Loading';
 import Header from './components/Header';
 import bgImage from './assets/image_fx_.jpg'
@@ -692,11 +693,7 @@ const LandingPage = () => {
         </section>
 
         {/* Footer */}
-        <footer className="bg-gray-800 text-white py-8">
-          <div className="container mx-auto px-4 text-center">
-            <p>&copy; 2024 AIBoost. Tous droits réservés.</p>
-          </div>
-        </footer>
+        <Footer />
       </main>
     </div>
   );
