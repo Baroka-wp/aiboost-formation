@@ -136,10 +136,10 @@ const LandingPage = () => {
                     />
                   </svg>
                 </div>
-                <span className="text-orange-500 font-medium mr-2">Nouveau !</span>
-                <span className="text-white">Terminez votre formation et récupérez 50% de vos frais</span>
+                <span className="text-orange-500 font-medium mr-2 flex-shrink-0">Nouveau !</span>
+                <span className="text-white flex-grow">Terminez votre formation et récupérez 50% de vos frais</span>
                 <svg
-                  className="w-5 h-5 ml-2 text-orange-500 transform group-hover:translate-x-1 transition-transform"
+                  className="w-5 h-5 ml-2 text-orange-500 transform group-hover:translate-x-1 transition-transform flex-shrink-0 hidden sm:block"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -154,8 +154,8 @@ const LandingPage = () => {
                 </svg>
               </div>
 
-              <h1 className="text-5xl font-bold text-white mb-6">
-                Développez vos compétences numériques avec des experts
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight">
+                Développez vos compétences<br className="hidden sm:block" /> numériques avec des experts
               </h1>
               <p className="text-xl text-gray-300 mb-8">
                 Formez-vous aux métiers du digital avec notre programme de formation complet et certifiant. 
