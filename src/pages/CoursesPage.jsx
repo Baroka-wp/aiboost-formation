@@ -4,7 +4,9 @@ import { Mail, Phone, Compass, ArrowRight, Clock, MessageCircle, Search, X } fro
 import CourseCard from '../components/CourseCard';
 import Header from '../components/Header';
 import Loading from '../components/Loading';
-import heroImage from '../assets/our_course.jpg';
+import ContactSection from '../components/ContactSection';
+import Footer from '../components/Footer';
+import heroImage from '../assets/why_us.jpg';
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
@@ -209,105 +211,13 @@ const CoursesPage = () => {
           )}
         </div>
 
-        {/* Contact */}
-        <section id="contact" className="py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center mb-16">
-              <h2 className="text-4xl font-bold mb-6">Besoin d'aide ?</h2>
-              <p className="text-lg text-gray-600">
-                Notre équipe est disponible pour répondre à toutes vos questions. 
-                Choisissez le moyen de contact qui vous convient le mieux.
-              </p>
-            </div>
+        {/* Contact Section */}
+        <ContactSection />
 
-            <div className="max-w-5xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* Email Card */}
-                <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow">
-                  <div className="flex items-center justify-center w-16 h-16 bg-orange-100 text-orange-600 rounded-full mb-6 mx-auto">
-                    <Mail size={28} />
-                  </div>
-                  <h3 className="text-xl font-semibold text-center mb-4">Email</h3>
-                  <p className="text-gray-600 text-center mb-6">
-                    Envoyez-nous un email pour des informations détaillées
-                  </p>
-                  <a
-                    href="mailto:birotori@gmail.com"
-                    className="flex items-center justify-center gap-2 w-full bg-orange-50 text-orange-600 py-3 rounded-xl hover:bg-orange-100 transition-colors group"
-                  >
-                    <span>birotori@gmail.com</span>
-                    <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
-                  </a>
-                </div>
-
-                {/* WhatsApp Card */}
-                <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow">
-                  <div className="flex items-center justify-center w-16 h-16 bg-green-100 text-green-600 rounded-full mb-6 mx-auto">
-                    <Phone size={28} />
-                  </div>
-                  <h3 className="text-xl font-semibold text-center mb-4">WhatsApp</h3>
-                  <p className="text-gray-600 text-center mb-6">
-                    Discussion instantanée avec notre équipe
-                  </p>
-                  <a
-                    href="https://wa.me/22967153974"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full bg-green-50 text-green-600 py-3 rounded-xl hover:bg-green-100 transition-colors group"
-                  >
-                    <span>+229 67 15 39 74</span>
-                    <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
-                  </a>
-                </div>
-
-                {/* Decision.io Card */}
-                <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow">
-                  <div className="flex items-center justify-center w-16 h-16 bg-blue-100 text-blue-600 rounded-full mb-6 mx-auto">
-                    <Compass size={28} />
-                  </div>
-                  <h3 className="text-xl font-semibold text-center mb-4">Orientation</h3>
-                  <p className="text-gray-600 text-center mb-6">
-                    Découvrez votre parcours idéal avec Decision.io
-                  </p>
-                  <a
-                    href="https://decision-io.vercel.app/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full bg-blue-50 text-blue-600 py-3 rounded-xl hover:bg-blue-100 transition-colors group"
-                  >
-                    <span>Faire le test</span>
-                    <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
-                  </a>
-                </div>
-              </div>
-
-              {/* Additional Info */}
-              <div className="mt-16 text-center">
-                <p className="text-gray-600 mb-4">
-                  Horaires de disponibilité : Lundi - Vendredi, 9h - 18h (UTC+1)
-                </p>
-                <div className="flex items-center justify-center gap-4">
-                  <span className="inline-flex items-center text-sm text-gray-500">
-                    <Clock size={16} className="mr-1" />
-                    Réponse sous 24h
-                  </span>
-                  <span className="inline-flex items-center text-sm text-gray-500">
-                    <MessageCircle size={16} className="mr-1" />
-                    Support en français
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="bg-gray-800 text-white py-8">
-          <div className="container mx-auto px-4 text-center">
-            <p>&copy; 2024 AIBoost. Tous droits réservés.</p>
-          </div>
-        </footer>
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

@@ -47,7 +47,7 @@ const CourseCard = ({ course }) => {
         </div>
 
         <Link
-          to={`/courses/${course.id}`}
+          to={`/course/${course.id}`}
           className="block w-full text-center bg-orange-600 text-white py-2 rounded-xl hover:bg-orange-700 transition-colors"
         >
           Voir le cours
