@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Book, User, GraduationCap, Award, Search, Clock, Briefcase, X, Mail, Phone, BookOpen, Users, ArrowRight, Compass, MessageCircle, Calendar } from 'lucide-react';
+import { Book, User, GraduationCap, Award, Search, Clock, Briefcase, X, Mail, Phone, BookOpen, Users, ArrowRight, Compass, MessageCircle, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAllCourses, getAllCategories, getAllTags } from './services/api';
 import Footer from './components/Footer';
 import Loading from './components/Loading';
 import Header from './components/Header';
 import bgImage from './assets/image_fx_.jpg'
-import why_us_image from './assets/why_us.jpg'
+import video_about_platforme from './assets/video_about_plateform.mov'
+import screenshot1 from './assets/qcm_screen.png'
+import screenshot2 from './assets/profilt_screen.png'
+import screenshot3 from './assets/cours_screen.png'
 import robo_img from './assets/our_course.jpg'
 
 const LandingPage = () => {
@@ -20,6 +23,9 @@ const LandingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [scrollY, setScrollY] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const screenshots = [screenshot1, screenshot2, screenshot3];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,6 +70,13 @@ const LandingPage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % screenshots.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleTagToggle = (tagId) => {
     setSelectedTags(prevTags =>
       prevTags.includes(tagId)
@@ -75,6 +88,14 @@ const LandingPage = () => {
   const scrollToPayback = () => {
     const paybackSection = document.getElementById('payback-program');
     paybackSection?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % screenshots.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + screenshots.length) % screenshots.length);
   };
 
   if (loading) return <Loading />;
@@ -143,7 +164,7 @@ const LandingPage = () => {
               <div className="flex flex-wrap gap-4">
                 <Link
                   to="/courses"
-                  className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105"
+                  className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all duration-300 flex items-center justify-center group text-lg"
                 >
                   Commencer maintenant
                 </Link>
@@ -158,100 +179,171 @@ const LandingPage = () => {
           </div>
         </section>
 
-        {/* Services Section */}
-        <section className="relative py-32 bg-white overflow-hidden">
-          <div className="container relative mx-auto px-4">
-            <div className="flex flex-col lg:flex-row items-center gap-16">
-              {/* Left Column - Content */}
-              <div className="w-full lg:w-1/2 relative z-10">
-                <div className="max-w-xl">
-                  <h2 className="text-6xl font-bold mb-8 bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 bg-clip-text text-transparent leading-tight">
-                    Pourquoi<br />
-                    Nous Choisir
-                  </h2>
-                  <div className="w-32 h-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-full mb-16"></div>
-
-                  {/* Cards Stack */}
-                  <div className="space-y-8">
-                    {/* Programme Complet */}
-                    <div className="group p-8 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-orange-500 shadow-lg hover:shadow-xl transition-all duration-300">
-                      <div className="flex gap-6">
-                        <div className="flex-shrink-0">
-                          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
-                            <BookOpen className="w-6 h-6 text-white" />
-                          </div>
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-orange-600 transition-colors">
-                            Programme Complet
-                          </h3>
-                          <p className="text-gray-600 leading-relaxed">
-                            Accédez à une large gamme de cours conçus par des experts de l'industrie, adaptés aux besoins du marché.
-                          </p>
-                        </div>
+        {/* Why Us Section */}
+        <div>
+          {/* Content Below Video */}
+          <div className="bg-white py-20">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-4xl font-bold mb-8 text-gray-900">
+                  Pourquoi Choisir Notre Plateforme ?
+                </h2>
+                <p className="text-lg text-gray-600 mb-12 leading-relaxed">
+                  Notre plateforme offre une expérience d'apprentissage unique, combinant technologie 
+                  de pointe et méthodes pédagogiques éprouvées. Nous nous engageons à votre réussite 
+                  avec un programme de remboursement garanti et un accompagnement personnalisé.
+                </p>
+                
+                {/* Features Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Feature 1 */}
+                  <div className="flex items-start space-x-4 p-6 rounded-xl bg-orange-50">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-xl bg-orange-600 flex items-center justify-center">
+                        <Book className="w-6 h-6 text-white" />
                       </div>
                     </div>
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2 text-gray-900">Contenu de Qualité</h3>
+                      <p className="text-gray-600">
+                        Des cours structurés et mis à jour régulièrement pour rester en phase avec les besoins du marché. Avec des QCM et des test de niveau
+                      </p>
+                    </div>
+                  </div>
 
-                    {/* Apprentissage Interactif */}
-                    <div className="group p-8 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-orange-500 shadow-lg hover:shadow-xl transition-all duration-300">
-                      <div className="flex gap-6">
-                        <div className="flex-shrink-0">
-                          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
-                            <Users className="w-6 h-6 text-white" />
-                          </div>
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-orange-600 transition-colors">
-                            Apprentissage Interactif
-                          </h3>
-                          <p className="text-gray-600 leading-relaxed">
-                            Échangez avec les formateurs et vos pairs à travers des sessions en direct et des forums dédiés.
-                          </p>
-                        </div>
+                  {/* Feature 2 */}
+                  <div className="flex items-start space-x-4 p-6 rounded-xl bg-orange-50">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-xl bg-orange-600 flex items-center justify-center">
+                        <User className="w-6 h-6 text-white" />
                       </div>
                     </div>
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2 text-gray-900">Accompagnement</h3>
+                      <p className="text-gray-600">
+                        Un mentor dédié pour vous guider et répondre à vos questions tout au long de votre parcours.
+                      </p>
+                    </div>
+                  </div>
 
-                    {/* Certifications Reconnues */}
-                    <div className="group p-8 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-100 hover:border-orange-500 shadow-lg hover:shadow-xl transition-all duration-300">
-                      <div className="flex gap-6">
-                        <div className="flex-shrink-0">
-                          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
-                            <Award className="w-6 h-6 text-white" />
-                          </div>
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-orange-600 transition-colors">
-                            Certifications Reconnues
-                          </h3>
-                          <p className="text-gray-600 leading-relaxed">
-                            Obtenez des certificats à la fin de vos formations pour valoriser votre profil professionnel.
-                          </p>
-                        </div>
+                  {/* Feature 3 */}
+                  <div className="flex items-start space-x-4 p-6 rounded-xl bg-orange-50">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-xl bg-orange-600 flex items-center justify-center">
+                        <GraduationCap className="w-6 h-6 text-white" />
                       </div>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2 text-gray-900">Certification</h3>
+                      <p className="text-gray-600">
+                        Des certifications reconnues pour valoriser vos nouvelles compétences sur le marché.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Feature 4 */}
+                  <div className="flex items-start space-x-4 p-6 rounded-xl bg-orange-50">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-xl bg-orange-600 flex items-center justify-center">
+                        <Award className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2 text-gray-900">Garantie Réussite</h3>
+                      <p className="text-gray-600">
+                        Programme de remboursement si vous ne trouvez pas d'emploi dans les 6 mois.
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* Right Column - Image */}
-              <div className="w-full lg:w-1/2 lg:h-[800px] relative overflow-hidden">
-                <div 
-                  className="absolute inset-0 lg:-right-48 lg:w-[150%]"
-                  style={{
-                    transform: `translateY(${scrollY * 0.1}px)`,
-                  }}
+            </div>
+          </div>
+          {/* Video and Screenshots Section */}
+          <div className="w-full relative bg-gray-50 py-20 mb-32">
+            <div className="container mx-auto px-4">
+              {/* Video Section */}
+              <div className="mb-32">
+                <video
+                  className="w-4/5 mx-auto aspect-video rounded-2xl shadow-2xl"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
                 >
-                  <img 
-                    src={why_us_image}
-                    alt="Illustration apprentissage" 
-                    className="w-full h-full object-cover rounded-2xl shadow-2xl"
+                  <source src={video_about_platforme} type="video/mp4" />
+                  Votre navigateur ne supporte pas la lecture de vidéos.
+                </video>
+              </div>
+
+              {/* Screenshots Section */}
+              <div className="relative h-[500px] max-w-6xl mx-auto mb-20">
+                {/* Main Screenshot - QCM */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] z-30 transition-all duration-300 hover:z-50 hover:scale-110 hover:shadow-2xl">
+                  <img
+                    src={screenshot3}
+                    alt="Interface QCM"
+                    className="w-full rounded-2xl shadow-2xl border-4 border-white"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/50 to-transparent"></div>
+                </div>
+
+                {/* Left Floating Screenshot - Profile */}
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[70%] z-20 transform -rotate-12 hover:rotate-0 transition-all duration-300 hover:z-50 hover:scale-110 hover:-translate-x-5">
+                  <img
+                    src={screenshot2}
+                    alt="Page de profil"
+                    className="w-full rounded-2xl shadow-xl border-4 border-white opacity-95 hover:opacity-100"
+                  />
+                </div>
+
+                {/* Right Floating Screenshot - Courses */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[50%] z-20 transform rotate-12 hover:rotate-0 transition-all duration-300 hover:z-50 hover:scale-110 hover:translate-x-5">
+                  <img
+                    src={screenshot1}
+                    alt="Liste des cours"
+                    className="w-full rounded-2xl shadow-xl border-4 border-white opacity-95 hover:opacity-100"
+                  />
+                </div>
+              </div>
+
+              {/* CTA Section */}
+              <div className="bg-gradient-to-br from-orange-600 to-red-600 rounded-3xl shadow-2xl mx-auto max-w-5xl -mb-16 relative z-10 overflow-hidden">
+                <div className="relative px-8 py-16">
+                  {/* Background Elements */}
+                  <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-white rounded-full mix-blend-soft-light filter blur-3xl opacity-10"></div>
+                  <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-white rounded-full mix-blend-soft-light filter blur-3xl opacity-10"></div>
+
+                  <div className="relative text-center">
+                    <h2 className="text-4xl font-bold text-white mb-6">
+                      Prêt à Commencer Votre Parcours vers l'Excellence ?
+                    </h2>
+                    <p className="text-xl text-orange-100 mb-12 max-w-2xl mx-auto">
+                      Inscrivez-vous dès maintenant ou prenez rendez-vous avec un conseiller 
+                      pour découvrir le parcours qui vous correspond le mieux.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                      <Link
+                        to="/register"
+                        className="min-w-[280px] whitespace-nowrap px-8 py-4 bg-white text-orange-600 rounded-xl font-medium hover:bg-orange-100 transition-colors group text-lg inline-flex items-center justify-center"
+                      >
+                        <span>S'inscrire maintenant</span>
+                        <ArrowRight className="w-6 h-6 ml-2 transform group-hover:translate-x-1 transition-transform flex-shrink-0" />
+                      </Link>
+                      
+                      <button
+                        onClick={() => document.getElementById('calendly-modal').classList.remove('hidden')}
+                        className="min-w-[280px] whitespace-nowrap px-8 py-4 bg-transparent border-2 border-white text-white rounded-xl font-medium hover:bg-white/10 transition-colors group text-lg inline-flex items-center justify-center"
+                      >
+                        <span>Parler à un conseiller</span>
+                        <Calendar className="w-6 h-6 ml-2 transform group-hover:translate-x-1 transition-transform flex-shrink-0" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
         {/* Courses Section */}
         <section className="py-20 relative overflow-hidden">
@@ -296,8 +388,8 @@ const LandingPage = () => {
                   </svg>
                 </div>
               </div>
-              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 bg-clip-text text-transparent">
-                Propulsez Votre Carrière
+              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 bg-clip-text text-transparent leading-tight">
+                Nos formations Populaires
               </h2>
               <p className="text-lg text-gray-600">
                 Des formations intensives conçues par des experts pour vous transformer en professionnel du numérique
@@ -476,7 +568,7 @@ const LandingPage = () => {
                   <div className="mt-8">
                   <button 
                       onClick={() => document.getElementById('calendly-modal').classList.remove('hidden')}
-                      className="bg-orange-600 text-white px-8 py-3 rounded-xl hover:bg-orange-700 transition-colors inline-flex items-center gap-2"
+                      className="bg-orange-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-orange-700 transition-colors inline-flex items-center gap-2"
                     >
                       <Calendar className="w-5 h-5" />
                       Prendre un rendez-vous
@@ -526,11 +618,11 @@ const LandingPage = () => {
                   href="https://decision-io.vercel.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-8 py-4 bg-white text-orange-600 rounded-xl font-medium hover:bg-orange-100 transition-all duration-300 flex items-center justify-center group text-lg"
+                  className="min-w-[280px] whitespace-nowrap px-8 py-4 bg-white text-orange-600 rounded-xl font-medium hover:bg-orange-100 transition-colors group text-lg inline-flex items-center justify-center"
                 >
-                  Découvrir mon parcours idéal
+                  <span>Découvrir mon parcours</span>
                   <svg
-                    className="w-6 h-6 ml-2 transform group-hover:translate-x-1 transition-transform"
+                    className="w-6 h-6 ml-2 transform group-hover:translate-x-1 transition-transform flex-shrink-0"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -547,10 +639,10 @@ const LandingPage = () => {
                 
                 <button
                   onClick={() => document.getElementById('calendly-modal').classList.remove('hidden')}
-                  className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-xl font-medium hover:bg-white/10 transition-all duration-300 flex items-center justify-center group text-lg"
+                  className="min-w-[280px] whitespace-nowrap px-8 py-4 bg-transparent border-2 border-white text-white rounded-xl font-medium hover:bg-white/10 transition-colors group text-lg inline-flex items-center justify-center"
                 >
-                  Parler à un conseiller
-                  <Calendar className="w-6 h-6 ml-2 transform group-hover:translate-x-1 transition-transform" />
+                  <span>Parler à un conseiller</span>
+                  <Calendar className="w-6 h-6 ml-2 transform group-hover:translate-x-1 transition-transform flex-shrink-0" />
                 </button>
               </div>
             </div>
