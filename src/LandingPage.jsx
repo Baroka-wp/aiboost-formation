@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Book, User, GraduationCap, Award, Search, Clock, Briefcase, X, Mail, Phone, BookOpen, Users, ArrowRight, Compass, MessageCircle } from 'lucide-react';
+import { Book, User, GraduationCap, Award, Search, Clock, Briefcase, X, Mail, Phone, BookOpen, Users, ArrowRight, Compass, MessageCircle, Calendar } from 'lucide-react';
 import { getAllCourses, getAllCategories, getAllTags } from './services/api';
 import Footer from './components/Footer';
 import Loading from './components/Loading';
@@ -146,12 +146,12 @@ const LandingPage = () => {
                 >
                   Commencer maintenant
                 </Link>
-                <Link
+                {/* <Link
                   to="/program"
                   className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-xl font-medium hover:bg-white/20 transition-all duration-300 border border-white/20"
                 >
                   En savoir plus
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>
@@ -371,6 +371,21 @@ const LandingPage = () => {
           </div>
         </section>
 
+        {/* Calendly Modal */}
+        <div id="calendly-modal" className="fixed inset-0 bg-white z-[9999] hidden">
+          <button 
+            onClick={() => document.getElementById('calendly-modal').classList.add('hidden')}
+            className="absolute top-4 right-4 p-2 text-gray-600 hover:text-gray-800 transition-colors z-[10000]"
+          >
+            <X className="w-8 h-8" />
+          </button>
+          <iframe 
+            src="https://calendly.com/baroka/connecting-meeting" 
+            className="w-full h-full border-none"
+            title="Calendly Scheduling"
+          />
+        </div>
+
         {/* Payback Program Section */}
         <section id="payback-program" className="py-20 bg-gradient-to-br from-orange-50 to-red-50 relative overflow-hidden">
           <div className="container mx-auto px-4">
@@ -458,12 +473,13 @@ const LandingPage = () => {
 
                   {/* CTA Button */}
                   <div className="mt-8">
-                    <Link
-                      to="/courses"
-                      className="block w-full bg-gradient-to-r from-orange-500 to-red-500 text-white text-center py-3 rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all duration-300"
+                  <button 
+                      onClick={() => document.getElementById('calendly-modal').classList.remove('hidden')}
+                      className="bg-orange-600 text-white px-8 py-3 rounded-xl hover:bg-orange-700 transition-colors inline-flex items-center gap-2"
                     >
-                      Découvrir les formations éligibles
-                    </Link>
+                      <Calendar className="w-5 h-5" />
+                      Prendre un rendez-vous
+                    </button>
                   </div>
                 </div>
               </div>

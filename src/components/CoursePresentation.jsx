@@ -4,9 +4,11 @@ import { getCourseById, getEnrolledCourses } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import InscriptionFormModal from './InscriptionFormModal';
 import Loading from './Loading';
-import { Book, Clock, Users, ChevronRight, Home, User, Twitter, Facebook, Linkedin, Wallet } from 'lucide-react';
+import { Book, Clock, Users, ChevronRight, Home, User, Twitter, Facebook, Linkedin, Wallet, GraduationCap } from 'lucide-react';
 import Header from './Header';
-
+import ContactSection from './ContactSection';
+import Footer from './Footer';
+import heroImage from '../assets/image_fx_.jpg';
 
 const CoursePresentation = () => {
   const { courseId } = useParams();
@@ -100,94 +102,150 @@ const CoursePresentation = () => {
   if (!course) return <div className="text-center mt-8">Cours non trouvé</div>;
 
   return (
-    <div className="bg-orange-50 min-h-screen font-sans">
-      {/* Header */}
+    <div className="min-h-screen bg-gray-50">
       <Header />
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-20">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{course?.title}</h1>
-          <p className="text-xl mb-8">{course?.description}</p>
-          <div className="flex flex-wrap items-center text-sm md:text-base gap-4 mb-8">
-            <div className="flex items-center">
-              <Book className="mr-2" size={20} />
-              <span>{course?.chapters?.length || 0} chapitres</span>
-            </div>
-            <div className="flex items-center">
-              <Clock className="mr-2" size={20} />
-              <span>{course?.duration || 'À déterminer'} heures</span>
-            </div>
-            <div className="flex items-center">
-              <Users className="mr-2" size={20} />
-              <span>{course?.enrolled_count || 0} étudiants inscrits</span>
-            </div>
+      <main>
+        {/* Hero Section with Parallax */}
+        <div className="relative h-[500px] overflow-hidden">
+          {/* Background Image with Parallax */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${heroImage})`,
+              transform: `translateY(${window.scrollY * 0.5}px)`,
+              willChange: 'transform'
+            }}
+          />
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-600/80 to-red-600/80" />
+          
+          {/* Content */}
+          <div className="relative h-full flex items-center">
+            <div className="container mx-auto px-4">
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="bg-white/10 backdrop-blur-sm p-3 rounded-xl">
+                  <GraduationCap size={32} className="text-white" />
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold text-white">
+                  {course?.title}
+                </h1>
+              </div>
+              <p className="text-xl text-orange-100 max-w-3xl mb-8">
+                {course?.description}
+              </p>
 
-            <div className="flex items-center">
-              <Wallet className="mr-2" size={20} />
-              <span>{course?.price || 0} FCFA (+ les frais environ 1,5%) </span>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-4 items-center">
-            <button
-              onClick={handleCourseAction}
-              className="bg-white text-orange-600 px-6 py-3 rounded-full text-lg font-semibold hover:bg-orange-100 transition-colors"
-            >
-              {isEnrolled ? "Continuer le cours" : "S'inscrire au cours"}
-            </button>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleShare('twitter')}
-                className="bg-[#1DA1F2] text-white p-2 rounded-full hover:bg-[#1a91da] transition-colors"
-                aria-label="Partager sur Twitter"
-              >
-                <Twitter size={20} />
-              </button>
-              <button
-                onClick={() => handleShare('facebook')}
-                className="bg-[#4267B2] text-white p-2 rounded-full hover:bg-[#365899] transition-colors"
-                aria-label="Partager sur Facebook"
-              >
-                <Facebook size={20} />
-              </button>
-              <button
-                onClick={() => handleShare('linkedin')}
-                className="bg-[#0077B5] text-white p-2 rounded-full hover:bg-[#006699] transition-colors"
-                aria-label="Partager sur LinkedIn"
-              >
-                <Linkedin size={20} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* Course Content */}
-      <main className="container mx-auto p-4 md:p-8">
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-4">À propos de ce cours</h2>
-          <p className="text-gray-700">{course.long_description || course.description}</p>
-        </div>
+              <div className="flex flex-wrap items-center gap-6 mb-8 text-white">
+                <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl">
+                  <Book className="mr-2" size={20} />
+                  <span>{course?.chapters?.length || 0} chapitres</span>
+                </div>
+                <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl">
+                  <Clock className="mr-2" size={20} />
+                  <span>{course?.duration || 'À déterminer'} heures</span>
+                </div>
+                <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl">
+                  <Users className="mr-2" size={20} />
+                  <span>{course?.enrolled_count || 0} étudiants</span>
+                </div>
+                <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl">
+                  <Wallet className="mr-2" size={20} />
+                  <span>{course?.price || 0} FCFA</span>
+                </div>
+              </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold mb-4">Contenu du cours</h2>
-          <ul className="space-y-4">
-            {course.chapters.map((chapter, index) => (
-              <li key={chapter.id} className="flex items-center">
-                <span className="mr-4 text-orange-600 font-bold">{index + 1}</span>
-                <span className="flex-grow">{chapter.title}</span>
-                {isEnrolled && (
+              <div className="flex flex-wrap gap-4 items-center">
+                <button
+                  onClick={handleCourseAction}
+                  className="bg-white text-orange-600 px-8 py-3 rounded-xl text-lg font-semibold hover:bg-orange-50 transition-colors"
+                >
+                  {isEnrolled ? "Continuer le cours" : "S'inscrire au cours"}
+                </button>
+                <div className="flex gap-3">
                   <button
-                    onClick={() => navigate(`/course/${courseId}/chapter/${chapter.id}`)}
-                    className="text-orange-600 hover:text-orange-800"
+                    onClick={() => handleShare('twitter')}
+                    className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-xl hover:bg-white/20 transition-colors"
+                    aria-label="Partager sur Twitter"
                   >
-                    <ChevronRight size={20} />
+                    <Twitter size={20} />
                   </button>
-                )}
-              </li>
-            ))}
-          </ul>
+                  <button
+                    onClick={() => handleShare('facebook')}
+                    className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-xl hover:bg-white/20 transition-colors"
+                    aria-label="Partager sur Facebook"
+                  >
+                    <Facebook size={20} />
+                  </button>
+                  <button
+                    onClick={() => handleShare('linkedin')}
+                    className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-xl hover:bg-white/20 transition-colors"
+                    aria-label="Partager sur LinkedIn"
+                  >
+                    <Linkedin size={20} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Course Content */}
+        <div className="container mx-auto px-4 -mt-20 relative z-10">
+          {/* Main Content */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 mb-12">
+            {/* About Course */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <Book className="mr-3 text-orange-600" />
+                À propos de ce cours
+              </h2>
+              <p className="text-gray-700 leading-relaxed">
+                {course.long_description || course.description}
+              </p>
+            </div>
+
+            {/* Course Chapters */}
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <GraduationCap className="mr-3 text-orange-600" />
+                Contenu du cours
+              </h2>
+              <div className="grid gap-4">
+                {course.chapters.map((chapter, index) => (
+                  <div 
+                    key={chapter.id} 
+                    className="flex items-center p-4 rounded-xl bg-gray-50 hover:bg-orange-50 transition-colors"
+                  >
+                    <span className="w-8 h-8 flex items-center justify-center bg-orange-100 text-orange-600 rounded-lg font-bold mr-4">
+                      {index + 1}
+                    </span>
+                    <div className="flex-grow">
+                      <h3 className="font-medium text-gray-800">{chapter.title}</h3>
+                      {chapter.description && (
+                        <p className="text-sm text-gray-600 mt-1">{chapter.description}</p>
+                      )}
+                    </div>
+                    {isEnrolled && (
+                      <button
+                        onClick={() => navigate(`/course/${courseId}/chapter/${chapter.id}`)}
+                        className="ml-4 p-2 text-orange-600 hover:text-orange-800 hover:bg-orange-100 rounded-lg transition-colors"
+                      >
+                        <ChevronRight size={20} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Section */}
+        <ContactSection />
       </main>
+
+      {/* Footer */}
+      <Footer />
 
       {showModal && (
         <InscriptionFormModal

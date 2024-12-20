@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -40,24 +41,24 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Legal Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Légal</h4>
-            <ul className="space-y-2">
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Légal</h3>
+            <ul className="mt-4 space-y-4">
               <li>
-                <a href="/privacy" className="text-gray-400 hover:text-white transition-colors">
-                  Politique de confidentialité
-                </a>
+                <Link to="/privacy" className="text-base text-gray-300 hover:text-white">
+                  Politique de Confidentialité
+                </Link>
               </li>
               <li>
-                <a href="/terms" className="text-gray-400 hover:text-white transition-colors">
-                  Conditions d'utilisation
-                </a>
+                <Link to="/terms" className="text-base text-gray-300 hover:text-white">
+                  Conditions d'Utilisation
+                </Link>
               </li>
               <li>
-                <a href="/cookies" className="text-gray-400 hover:text-white transition-colors">
-                  Politique des cookies
-                </a>
+                <Link to="/cookies" className="text-base text-gray-300 hover:text-white">
+                  Politique des Cookies
+                </Link>
               </li>
             </ul>
           </div>
@@ -68,7 +69,8 @@ const Footer = () => {
             <ul className="space-y-2 text-gray-400">
               <li>Email: birotori@gmail.com</li>
               <li>Tel: +229 01 67 15 39 74</li>
-              <li>Paris, France</li>
+              <li>Whatsapp: +229 67 15 39 74</li>
+              <li>Benin, Natitingou</li>
             </ul>
           </div>
         </div>

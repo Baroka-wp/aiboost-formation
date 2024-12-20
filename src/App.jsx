@@ -11,6 +11,9 @@ import Login from './components/Login';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Loading from './components/Loading';
 import CoursesPage from './pages/CoursesPage';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Cookies from './pages/Cookies';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { isAuthenticated, loading, user } = useAuth();
@@ -55,6 +58,9 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="/courses" element={<CoursesPage />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/cookies" element={<Cookies />} />
         </Routes>
       </AuthProvider>
     </Router>

@@ -9,6 +9,7 @@ import Header from './components/Header';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import { User, BookOpen, Edit2 } from 'lucide-react';
+import profileBg from './assets/image_fx_.jpg';
 
 const ProfilePage = () => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
@@ -80,14 +81,17 @@ const ProfilePage = () => {
       <main>
         {/* Hero Section with Parallax */}
         <div className="relative h-[400px] overflow-hidden">
-          {/* Background Gradient */}
+          {/* Background Image with Parallax */}
           <div 
-            className="absolute inset-0 bg-gradient-to-br from-orange-600 to-red-600"
+            className="absolute inset-0 bg-cover bg-center"
             style={{
+              backgroundImage: `url(${profileBg})`,
               transform: `translateY(${scrollY * 0.5}px)`,
               willChange: 'transform'
             }}
           />
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-600/80 to-red-600/80" />
           
           {/* Content */}
           <div className="relative h-full flex items-center">

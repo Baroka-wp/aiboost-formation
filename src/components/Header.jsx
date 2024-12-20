@@ -79,7 +79,7 @@ const Header = () => {
                 isScrolled ? 'text-gray-800 after:bg-orange-600' : 'text-white after:bg-white'
               }`}
             >
-              Contact
+              Orientation
             </a>
             {isAuthenticated ? (
               <>
