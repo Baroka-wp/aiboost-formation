@@ -34,20 +34,8 @@ const ProfilePage = () => {
       if (user) {
         try {
           setLoading(true);
-          const [coursesResponse, progressResponse] = await Promise.all([
-            getEnrolledCourses(user.id),
-            getEnrolledCoursesProgress(user.id)
-          ]);
-          
-          const coursesWithProgress = coursesResponse.data.map(course => {
-            const progressInfo = progressResponse.data.find(p => p.course_id === course.id);
-            return {
-              ...course,
-              progress: progressInfo ? progressInfo.percentage : 0
-            };
-          });
-          
-          setEnrolledCourses(coursesWithProgress);
+          const coursesResponse = await getEnrolledCoursesProgress(user.id)
+          setEnrolledCourses(coursesResponse?.data || []);
         } catch (error) {
           console.error('Error fetching data:', error);
           setError('Failed to fetch data. Please try again.');
@@ -58,8 +46,8 @@ const ProfilePage = () => {
     };
 
     fetchData();
-  }, [user]);
-
+  }, []);
+  
   const handleProfileUpdate = async (updatedData) => {
     try {
       const updatedUser = await updateUserProfile(updatedData);
