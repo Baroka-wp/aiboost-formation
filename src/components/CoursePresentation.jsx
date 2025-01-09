@@ -107,7 +107,7 @@ const CoursePresentation = () => {
 
       <main>
         {/* Hero Section with Parallax */}
-        <div className="relative h-[500px] overflow-hidden">
+        <div className="relative min-h-[400px] md:h-[500px] overflow-hidden">
           {/* Background Image with Parallax */}
           <div 
             className="absolute inset-0 bg-cover bg-center"
@@ -123,19 +123,19 @@ const CoursePresentation = () => {
           {/* Content */}
           <div className="relative h-full flex items-center">
             <div className="container mx-auto px-4">
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="bg-white/10 backdrop-blur-sm p-3 rounded-xl">
+              <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
+                <div className="bg-white/10 backdrop-blur-sm p-3 rounded-xl self-start md:self-auto">
                   <GraduationCap size={32} className="text-white" />
                 </div>
-                <h1 className="text-4xl md:text-5xl font-bold text-white">
+                <h1 className="text-3xl md:text-5xl font-bold text-white">
                   {course?.title}
                 </h1>
               </div>
-              <p className="text-xl text-orange-100 max-w-3xl mb-8">
+              <p className="text-lg md:text-xl text-orange-100 max-w-3xl mb-8">
                 {course?.description}
               </p>
 
-              <div className="flex flex-wrap items-center gap-6 mb-8 text-white">
+              <div className="flex flex-wrap items-center gap-4 mb-8 text-white">
                 <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl">
                   <Book className="mr-2" size={20} />
                   <span>{course?.chapters?.length || 0} chapitres</span>
@@ -154,14 +154,14 @@ const CoursePresentation = () => {
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex flex-col md:flex-row flex-wrap gap-4 items-center">
                 <button
                   onClick={handleCourseAction}
-                  className="bg-white text-orange-600 px-8 py-3 rounded-xl text-lg font-semibold hover:bg-orange-50 transition-colors"
+                  className="w-full md:w-auto bg-white text-orange-600 px-8 py-3 rounded-xl text-lg font-semibold hover:bg-orange-50 transition-colors mb-4 md:mb-0"
                 >
                   {isEnrolled ? "Continuer le cours" : "S'inscrire au cours"}
                 </button>
-                <div className="flex gap-3">
+                <div className="flex justify-center md:justify-start gap-3 w-full md:w-auto">
                   <button
                     onClick={() => handleShare('twitter')}
                     className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-xl hover:bg-white/20 transition-colors"
@@ -190,9 +190,9 @@ const CoursePresentation = () => {
         </div>
 
         {/* Course Content */}
-        <div className="container mx-auto px-4 -mt-20 relative z-10">
+        <div className="container mx-auto px-4 -mt-10 md:-mt-20 relative z-10">
           {/* Main Content */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-12">
+          <div className="bg-white rounded-2xl shadow-lg p-4 md:p-8 mb-12">
             {/* About Course */}
             <div className="mb-12">
               <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">

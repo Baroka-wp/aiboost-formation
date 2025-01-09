@@ -14,6 +14,7 @@ import QCM from './QCM';
 import TableOfContents from './TableOfContents';
 import Loading from './Loading';
 import LinkSubmission from './LinkSubmission';
+import CompletionButton from './CompletionButton';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 const ChapterContent = () => {
@@ -61,13 +62,13 @@ const ChapterContent = () => {
 
       if (currentChapter) {
         setChapterContent(currentChapter.content);
-        const extractedHeadings = currentChapter.content.match(/^#{1,6}.+$/gm).map(heading => {
+        const extractedHeadings = currentChapter.content.match(/^#{1,6}.+$/gm)?.map(heading => {
           const level = heading.match(/^#+/)[0].length;
           const text = heading.replace(/^#+\s*/, '');
           const id = text.toLowerCase().replace(/[^\w]+/g, '-');
           return { level, text, id };
         });
-        setHeadings(extractedHeadings);
+        setHeadings(extractedHeadings || []);
       } else {
         setChapterContent("Chapter not found.");
       }
@@ -93,10 +94,11 @@ const ChapterContent = () => {
   }, [course, chapterId]);
 
   const handleCompleteChapter = async () => {
+    console.log("Complete chapter.......")
+
     try {
       const updatedProgress = await updateUserProgress(courseId, chapterId, true);
       setUserProgress(updatedProgress.data);
-      alert("Chapitre terminé avec succès !");
     } catch (error) {
       console.error("Erreur lors de la mise à jour du progrès :", error);
       alert("Une erreur est survenue. Veuillez réessayer.");
@@ -116,19 +118,6 @@ const ChapterContent = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-
-  const handleChapterComplete = async (isCompleted) => {
-    if (isCompleted) {
-      try {
-        const updatedProgress = await updateUserProgress(courseId, chapterId, true);
-        setUserProgress(updatedProgress.data);
-        console.log("Chapter completed!");
-      } catch (error) {
-        console.error("Error updating progress:", error);
-      }
-    }
-  };
 
 
   const handleLinkSubmit = useCallback(async (courseId, chapterId, link) => {
@@ -155,7 +144,7 @@ const ChapterContent = () => {
         switch (match[1]) {
           case 'qcm':
             const qcmProps = JSON.parse(children);
-            return <QCM {...qcmProps} onComplete={handleChapterComplete} />;
+            return <QCM {...qcmProps} onComplete={handleCompleteChapter} />;
           case 'youtube':
             const youtubeId = children.toString().trim();
             return (
@@ -255,13 +244,24 @@ const ChapterContent = () => {
               {course.chapters.map((chapter) => (
                 <li
                   key={chapter.id}
-                  className={`flex items-center cursor-pointer p-2 rounded ${parseInt(chapterId) === chapter.id ? 'bg-orange-100' : 'hover:bg-orange-50'}`}
+                  className={`flex items-center cursor-pointer p-2 rounded relative ${parseInt(chapterId) === chapter.id ? 'bg-orange-100' : 'hover:bg-orange-50'}`}
                   onClick={() => navigate(`/course/${courseId}/chapter/${chapter.id}`)}
                 >
-                  {userProgress?.completed_chapters.includes(chapter.id) && (
-                    <CheckCircle size={26} className="text-green-500 mr-2" />
-                  )}
-                  <span>{chapter.title}</span>
+                  <div className="flex items-center flex-1 min-w-0">
+                    {userProgress?.completed_chapters.includes(chapter.id) && (
+                      <CheckCircle 
+                        size={20} 
+                        className="text-green-500 mr-2 flex-shrink-0" 
+                        title="Chapitre terminé" 
+                      />
+                    )}
+                    <span 
+                      className="truncate flex-1"
+                      title={chapter.title}
+                    >
+                      {chapter.title}
+                    </span>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -279,12 +279,12 @@ const ChapterContent = () => {
                 </ReactMarkdown>
               </div>
               {showCompleteButton && (
-                <button
-                  onClick={handleCompleteChapter}
-                  className="mt-6 bg-orange-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-colors"
-                >
-                  Terminer le chapitre
-                </button>
+                <div className="mt-6">
+                  <CompletionButton
+                    onComplete={() => handleCompleteChapter()}
+                    isCompleted={userProgress?.completed_chapters?.includes(parseInt(chapterId))}
+                  />
+                </div>
               )}
             </div>
           </div>
