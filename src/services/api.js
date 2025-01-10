@@ -107,4 +107,38 @@ export const createTag = (name) => api.post('/courses/tags', { name });
 export const enrollUserInCourse = (courseId, email) => api.post(`/courses/enroll/${courseId}`, { email });
 export const searchCourses = (query, category, tags) => api.get('/courses/search', { params: { query, category, tags } });
 
+
+// Survey APIs
+export const submitSurvey = async (surveyData) => {
+  try {
+    const response = await api.post('/survey/submit', surveyData);
+    return response;
+  } catch (error) {
+    if (error.response?.status === 400) {
+      throw new Error('Données de sondage invalides. Veuillez vérifier vos réponses.');
+    } else if (error.response?.status === 401) {
+      throw new Error('Session expirée. Veuillez vous reconnecter.');
+    } else {
+      throw new Error('Une erreur est survenue lors de la soumission du sondage.');
+    }
+  }
+};
+
+export const getSurveyRecommendations = async (userId) => {
+  try {
+    const response = await api.get(`/survey/recommendations/${userId}`);
+    return response;
+  } catch (error) {
+    throw new Error('Impossible de récupérer les recommandations de cours.');
+  }
+};
+
+export const getSurveyStats = async () => {
+  try {
+    const response = await api.get('/survey/stats');
+    return response;
+  } catch (error) {
+    throw new Error('Impossible de récupérer les statistiques du sondage.');
+  }
+};
 export default api;

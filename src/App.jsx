@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import LandingPage from './LandingPage';
 import ProfilePage from './ProfilePage';
 import ChapterContent from './components/ChapterContent';
@@ -9,13 +10,13 @@ import AdminDashboard from './AdminDashboard';
 import RegistrationPage from './components/RegistrationPage';
 import Login from './components/Login';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import FloatingButton from './components/FloatingButton';
-import Chat from './components/Chat';
 import Loading from './components/Loading';
 import CoursesPage from './pages/CoursesPage';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Cookies from './pages/Cookies';
+import CourseSurveyBot from './components/CourseSurveyBot';
+
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { isAuthenticated, loading, user } = useAuth();
@@ -40,12 +41,12 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 
 function App() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
-
   return (
     <div className="relative min-h-screen">
       <Router>
         <AuthProvider>
+          <Toaster position="top-right" />
+          <CourseSurveyBot />
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
@@ -71,12 +72,6 @@ function App() {
           </Routes>
         </AuthProvider>
       </Router>
-      <FloatingButton onClick={() => setIsChatOpen(true)} />
-      {isChatOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center">
-          <Chat onClose={() => setIsChatOpen(false)} />
-        </div>
-      )}
     </div>
   );
 }
